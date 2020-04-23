@@ -21,11 +21,11 @@ def get_file_lists(path: dir) -> Tuple[List[dir]]:
 
     Args:
         - Path: Relative or absolute location of directory containing
-            images and masks subdirectories.
+            images and labels subdirectories.
 
     Returns:
         - x_list, y_list: Lists of absolute file paths for the files found
-            in the images or masks subdirectories.
+            in the images or labels subdirectories.
     """
     if not os.path.exists(path):
         raise OSError(f"Path {path} must exist.")
@@ -54,7 +54,7 @@ def get_file_lists(path: dir) -> Tuple[List[dir]]:
     return x_list, y_list
 
 
-def group_to_numpy(image: dir, label: dir, convert: float) -> Tuple[np.ndarray]:
+def group_to_numpy(image: dir, label: dir, conversion: float) -> Tuple[np.ndarray]:
     """ Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays. 
     """
 
@@ -64,8 +64,9 @@ def group_to_numpy(image: dir, label: dir, convert: float) -> Tuple[np.ndarray]:
 
         return 0, 0
 
-    df.columns = ["y", "x"]
+    df.columns = ["x", "y"]
     xy = np.stack([df["x"].to_numpy(), df["y"].to_numpy()]).T
+    xy = xy*conversion
 
     return image, xy
 
@@ -156,7 +157,7 @@ def main():
     print(f"  - Valid: {len(x_valid)}")
     print(f"  - Test: {len(x_test)}")
 
-    fname = f"{args.basename}_{secrets.token_hex(4)}.npz"
+    fname = f"../data/{args.basename}_{secrets.token_hex(4)}.npz"
     np.savez_compressed(
         fname,
         x_train=x_train,
