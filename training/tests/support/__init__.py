@@ -1,0 +1,1 @@
+from .funny import some_funny_func, SomeFunnyClass
