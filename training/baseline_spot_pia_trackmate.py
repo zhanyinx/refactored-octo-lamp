@@ -49,11 +49,15 @@ def load_trackmate_data(
             f"size and cell_size must be int, but are {type(size), type(cell_size)}."
         )
 
-    y_list, t_list = training.util_trackmate.trackmate_get_file_lists(path)
-    label_true, label_trackmate = training.util_trackmate.trackmate_files_to_numpy(
-        y_list, t_list, conversion, size, cell_size
+    x_list, y_list, t_list = training.util_trackmate.trackmate_get_file_lists(path)
+    (
+        images,
+        label_true,
+        label_trackmate,
+    ) = training.util_trackmate.trackmate_files_to_numpy(
+        x_list, y_list, t_list, conversion, size, cell_size
     )
-    return label_true, label_trackmate
+    return images, label_true, label_trackmate
 
 
 def detect_spots(input_image: np.ndarray, cell_size: int) -> np.ndarray:
@@ -173,7 +177,7 @@ def main():
         trackmate = args.trackmate
         conversion = args.conversion
 
-        label_true, label_trackmate = load_trackmate_data(
+        images, label_true, label_trackmate = load_trackmate_data(
             path=trackmate, conversion=conversion, size=size, cell_size=cell_size
         )
         df = compute_score(true=label_true, pred=label_trackmate, weight=weight)
