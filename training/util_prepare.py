@@ -9,10 +9,9 @@ def extract_basename(path: dir) -> str:
     return os.path.splitext(os.path.basename(path))[0]
 
 
-def train_valid_split(x_list: List[dir],
-                      y_list: List[dir],
-                      valid_split: float = 0.2,
-                      shuffle: bool = True) -> Iterable[List[dir]]:
+def train_valid_split(
+    x_list: List[dir], y_list: List[dir], valid_split: float = 0.2, shuffle: bool = True
+) -> Iterable[List[dir]]:
     """
     Splits two lists (input and predictions) into random training and validation
     sets with an optional shuffling.
@@ -28,17 +27,17 @@ def train_valid_split(x_list: List[dir],
     """
     if not all(isinstance(i, list) for i in [x_list, y_list]):
         raise TypeError(
-            f"x_list, y_list must be list but is {type(x_list)}, {type(y_list)}.")
+            f"x_list, y_list must be list but is {type(x_list)}, {type(y_list)}."
+        )
     if not isinstance(valid_split, float):
-        raise TypeError(
-            f"valid_split must be float but is {type(valid_split)}.")
+        raise TypeError(f"valid_split must be float but is {type(valid_split)}.")
     if not 0 <= valid_split <= 1:
-        raise ValueError(
-            f"valid_split must be between 0-1 but is {valid_split}.")
+        raise ValueError(f"valid_split must be between 0-1 but is {valid_split}.")
 
     if len(x_list) != len(y_list):
         raise ValueError(
-            f"Lists must be of equal length: {len(x_list)} != {len(y_list)}.")
+            f"Lists must be of equal length: {len(x_list)} != {len(y_list)}."
+        )
     if len(x_list) <= 2:
         raise ValueError("Lists must contain 2 elements or more.")
 
@@ -50,6 +49,7 @@ def train_valid_split(x_list: List[dir],
     def __shuffle(x_list: list, y_list: list):
         """ Shuffles two list keeping their relative arrangement. """
         import random
+
         combined = list(zip(x_list, y_list))
         random.shuffle(combined)
         x_tuple, y_tuple = zip(*combined)

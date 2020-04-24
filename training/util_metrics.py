@@ -2,15 +2,15 @@ import numpy as np
 from typing import List
 
 
-def _create_spot_mask(spot: np.ndarray, size: int, cell_size: int) -> np.ndarray:
+def _create_spot_mask(spot_coord: np.ndarray, size: int, cell_size: int) -> np.ndarray:
     """Create mask image with spot"""
     img = np.zeros((size // cell_size, size // cell_size, 3))
-    for i in range(len(spot)):
-        x = int(np.floor(spot[i, 0])) // cell_size
-        y = int(np.floor(spot[i, 1])) // cell_size
+    for i in range(len(spot_coord)):
+        x = int(np.floor(spot_coord[i, 0])) // cell_size
+        y = int(np.floor(spot_coord[i, 1])) // cell_size
         img[x, y, 0] = 1
-        img[x, y, 1] = spot[i, 0]
-        img[x, y, 2] = spot[i, 1]
+        img[x, y, 1] = spot_coord[i, 0]
+        img[x, y, 2] = spot_coord[i, 1]
 
     return img
 
@@ -49,6 +49,10 @@ def _f1_score(pred: np.ndarray, true: np.ndarray, size: int, cell_size: int) -> 
     """Calculate f1 score  = 2*_precision*_recall/(_precision+_recall)"""
     r = _recall(pred, true, size, cell_size)
     p = _precision(pred, true, size, cell_size)
+    
+    if r==0 and p==0:
+        return 0
+
     f1_score = 2 * p * r / (p + r)
     return f1_score
 
