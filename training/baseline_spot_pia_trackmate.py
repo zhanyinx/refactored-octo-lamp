@@ -15,29 +15,62 @@ import skimage.exposure
 import skimage.feature
 import skimage.morphology
 import sys
+import itertools
 from typing import Tuple
 
 sys.path.append("../")
 
 import training.util_metrics
 import training.util_trackmate
+from training.util_prepare import _create_spot_mask
 
 
-def load_trackmate_data(path: dir, conversion: float = 1) -> Tuple[np.ndarray]:
-    """ Parse command-line argument and prepare dataset. """
+def load_trackmate_data(
+    path: dir, size: int, cell_size: int, conversion: float = 1
+) -> Tuple[np.ndarray]:
+    """
+    Returns two lists of np.ndarray of shape (n,n,3):
+    containing p,x,y. One for trackmate labeled, one for human labeled
 
-    y_list, t_list = training.util_trackmate.get_file_lists(path)
-    label_true, label_trackmate = training.util_trackmate.files_to_numpy(
-        y_list, t_list, conversion
+    Args:
+        - path (str): path to directory containing
+            trackmate and labels subdirectories.
+        - size (int): size of the images labeled by 
+            trackmate or human
+        - cell_size (int): size of cell used to calculate
+            F1 score, precision and recall  
+        - conversion (float): scaling factor used to convert
+            coordinates into pixel unit (default = 1, no
+            conversion)
+    """
+
+    if not all(isinstance(i, int) for i in (size, cell_size)):
+        raise TypeError(
+            f"size and cell_size must be int, but are {type(size), type(cell_size)}."
+        )
+
+    y_list, t_list = training.util_trackmate.trackmate_get_file_lists(path)
+    label_true, label_trackmate = training.util_trackmate.trackmate_files_to_numpy(
+        y_list, t_list, conversion, size, cell_size
     )
     return label_true, label_trackmate
 
 
-def detect_spots(input_image: np.ndarray) -> np.ndarray:
+def detect_spots(input_image: np.ndarray, cell_size: int) -> np.ndarray:
     """
-    Detects spots in an image returning the coordinates and size.
-    Returns in the format "row (y), column (x), sigma"
+    Use skimage.feature.blob_log to detect spots given an image.
+    Return np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell
+
+    Args:
+        - input_image (np.ndarray): image used to detect spot
+        - cell_size (int): size of cell used to calculate
+            F1 score, precision and recall  
     """
+
+    if not isinstance(input_image, np.ndarray):
+        raise TypeError(f"input_image must be np.ndarray but is {type(input_image)}.")
+
     img = input_image
     img = ndi.filters.gaussian_filter(img, 2)
     img = skimage.exposure.equalize_hist(img, nbins=512)
@@ -46,31 +79,35 @@ def detect_spots(input_image: np.ndarray) -> np.ndarray:
     )
 
     xy = np.stack([blobs[..., 1], blobs[..., 0]]).T
+    xy = _create_spot_mask(xy, len(img), cell_size)
     return xy
 
 
-def compute_score(
-    true: np.ndarray, pred: np.ndarray, size: int, cell_size: int, weight: float
-) -> pd.DataFrame:
-    """Compute f1 score, error on coordinate and weighted f1/error"""
+def compute_score(true: np.ndarray, pred: np.ndarray, weight: float) -> pd.DataFrame:
+    """
+    Compute F1 score, error on coordinate and a weighted average of the two.
+    Return pd.DataFrame with scores
+
+    Note – direction dependent, arguments cant be switched!!
+
+    Args:
+        - pred: list of np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell.
+        - true: list of np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell
+    """
     f1_score = pd.Series(
-        [
-            training.util_metrics._f1_score(p, t, size, cell_size)
-            for p, t in zip(true, pred)
-        ]
+        [training.util_metrics._f1_score(p, t) for p, t in zip(true, pred)]
     )
 
     err_coordinate = pd.Series(
-        [
-            training.util_metrics._error_on_coordinates(p, t, size, cell_size)
-            for p, t in zip(true, pred)
-        ]
+        [training.util_metrics._error_on_coordinates(p, t) for p, t in zip(true, pred)]
     )
 
     weighted_f1_score_error_coordinates = pd.Series(
         [
             training.util_metrics._weighted_average_f1_score_error_coordinates(
-                p, t, size, cell_size, weight
+                p, t, weight
             )
             for p, t in zip(true, pred)
         ]
@@ -97,11 +134,7 @@ def _parse_args():
         help="Rescaling factor to convert coordinates into pixel unit, required if --trackmate is defined",
     )
     parser.add_argument(
-        "-s",
-        "--size",
-        type=int,
-        required=True,
-        help="Size of images",
+        "-s", "--size", type=int, required=True, help="Size of images",
     )
     parser.add_argument(
         "-z",
@@ -110,11 +143,11 @@ def _parse_args():
         required=True,
         help="Size of the cell in the grid",
     )
-    
+
     parser.add_argument(
         "-w",
         "--weight",
-        type=float, 
+        type=float,
         help="Value multiplied to f1_score to calculate single weighted score",
     )
     args = parser.parse_args()
@@ -139,15 +172,11 @@ def main():
 
         trackmate = args.trackmate
         conversion = args.conversion
-        
-        label_true, label_trackmate = load_trackmate_data(trackmate, conversion)
-        df = compute_score(
-            true=label_true,
-            pred=label_trackmate,
-            size=size,
-            cell_size=cell_size,
-            weight=weight,
+
+        label_true, label_trackmate = load_trackmate_data(
+            path=trackmate, conversion=conversion, size=size, cell_size=cell_size
         )
+        df = compute_score(true=label_true, pred=label_trackmate, weight=weight)
         df_describe = df.describe()
         df_describe.to_csv(
             f"{os.path.splitext(args.trackmate)[0]}_trackmate_baseline.csv"
@@ -168,22 +197,20 @@ def main():
             valid_y = data["y_valid"]
             test_y = data["y_test"]
 
-        train_pred = list(map(detect_spots, train_x))
-        valid_pred = list(map(detect_spots, valid_x))
-        test_pred = list(map(detect_spots, test_x))
+        train_pred = list(map(detect_spots, train_x, itertools.repeat(cell_size)))
+        valid_pred = list(map(detect_spots, valid_x, itertools.repeat(cell_size)))
+        test_pred = list(map(detect_spots, test_x, itertools.repeat(cell_size)))
 
         for true, pred, name in zip(
-            [train_y, valid_y, test_y], [train_pred, valid_pred, test_pred], ["train","valid","test"]
+            [train_y, valid_y, test_y],
+            [train_pred, valid_pred, test_pred],
+            ["train", "valid", "test"],
         ):
-            df = compute_score(
-                true=true,
-                pred=pred,
-                size=size,
-                cell_size=cell_size,
-                weight=weight,
-            )
+            df = compute_score(true=true, pred=pred, weight=weight,)
             df_describe = df.describe()
-            df_describe.to_csv(f"{os.path.splitext(args.dataset)[0]}.{name}_baseline.csv")
+            df_describe.to_csv(
+                f"{os.path.splitext(args.dataset)[0]}.{name}_baseline.csv"
+            )
 
 
 if __name__ == "__main__":

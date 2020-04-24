@@ -2,82 +2,101 @@ import numpy as np
 from typing import List
 
 
-def _create_spot_mask(spot_coord: np.ndarray, size: int, cell_size: int) -> np.ndarray:
-    """Create mask image with spot"""
-    img = np.zeros((size // cell_size, size // cell_size, 3))
-    for i in range(len(spot_coord)):
-        x = int(np.floor(spot_coord[i, 0])) // cell_size
-        y = int(np.floor(spot_coord[i, 1])) // cell_size
-        img[x, y, 0] = 1
-        img[x, y, 1] = spot_coord[i, 0]
-        img[x, y, 2] = spot_coord[i, 1]
-
-    return img
-
-
 def _euclidian_dist(x1: float, y1: float, x2: float, y2: float) -> float:
     """Return the euclidian distance between two points"""
     d = np.sqrt(np.square(x1 - x2) + np.square(y1 - y2))
     return d
 
 
-def _precision(pred: np.ndarray, true: np.ndarray, size: int, cell_size: int) -> float:
+def _precision(pred: np.ndarray, true: np.ndarray) -> float:
     """
-    Calculate _precision (True positive)/ (True positive + False positive)
-    """
-    img_container_true = _create_spot_mask(true, size, cell_size)
-    img_container_pred = _create_spot_mask(pred, size, cell_size)
+    Returns the precision defined as (True positive)/(True positive + False positive).
+    Precision will be measured within cell of size "cell_size". If cell_size = 1, precision
+    will be measured at resolution of pixel.
 
-    selection = img_container_pred[..., 0] == 1
-    p = np.mean(img_container_true[selection, 0])
+    Note – direction dependent, arguments cant be switched!!
+
+    Args:
+        - pred: np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell.
+        - true: np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell
+    """
+
+    selection = pred[..., 0] == 1
+    p = np.mean(true[selection, 0])
     return p
 
 
-def _recall(pred: np.ndarray, true: np.ndarray, size: int, cell_size: int) -> float:
+def _recall(pred: np.ndarray, true: np.ndarray) -> float:
     """
-    Calculate _recall (True positive) / (True positive / False negative)
-    """
-    img_container_true = _create_spot_mask(true, size, cell_size)
-    img_container_pred = _create_spot_mask(pred, size, cell_size)
+    Returns the recall defined as (True positive)/(True positive + False negative).
+    Recall will be measured within cell of size "cell_size". If cell_size = 1, recall
+    will be measured at resolution of pixel.
 
-    selection = img_container_true[..., 0] == 1
-    r = np.mean(img_container_pred[selection, 0])
+    Note – direction dependent, arguments cant be switched!!
+
+    Args:
+        - pred: np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell.
+        - true: np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell
+    """
+
+    selection = true[..., 0] == 1
+    r = np.mean(pred[selection, 0])
     return r
 
 
-def _f1_score(pred: np.ndarray, true: np.ndarray, size: int, cell_size: int) -> float:
-    """Calculate f1 score  = 2*_precision*_recall/(_precision+_recall)"""
-    r = _recall(pred, true, size, cell_size)
-    p = _precision(pred, true, size, cell_size)
-    
-    if r==0 and p==0:
+def _f1_score(pred: np.ndarray, true: np.ndarray) -> float:
+    """
+    Returns F1 score defined as: 
+    2 * precision*recall / precision+recall
+
+    F1 score will be measured within cell of size "cell_size". If cell_size = 1, F1 score
+    will be measured at resolution of pixel.
+
+    Note – direction dependent, arguments cant be switched!!
+
+    Args:
+        - pred: np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell.
+        - true: np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell
+    """
+    r = _recall(pred, true)
+    p = _precision(pred, true)
+
+    if r == 0 and p == 0:
         return 0
 
     f1_score = 2 * p * r / (p + r)
     return f1_score
 
 
-def _error_on_coordinates(
-    pred: np.ndarray, true: np.ndarray, size: int, cell_size: int
-) -> List[float]:
+def _error_on_coordinates(pred: np.ndarray, true: np.ndarray) -> List[float]:
     """
-    Calculate error on the coordinate of true positives
-    """
-    img_container_true = _create_spot_mask(true, size, cell_size)
-    img_container_pred = _create_spot_mask(pred, size, cell_size)
+    Returns average error on spot coordinates.
 
-    spot = (img_container_true[..., 0] == 1) & (img_container_pred[..., 0] == 1)
+    Args:
+        - pred: np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell.
+        - true: np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell
+    """
+
+    spot = (true[..., 0] == 1) & (pred[..., 0] == 1)
     d = 0
     counter = 0
-    assert img_container_pred.shape == img_container_true.shape
+    assert pred.shape == true.shape
 
-    for i in range(len(img_container_pred)):
-        for j in range(len(img_container_pred)):
+    for i in range(len(pred)):
+        for j in range(len(pred)):
             if spot[i, j]:
-                x1 = img_container_true[i, j, 1]
-                x2 = img_container_pred[i, j, 1]
-                y1 = img_container_true[i, j, 2]
-                y2 = img_container_pred[i, j, 2]
+                x1 = true[i, j, 1]
+                x2 = pred[i, j, 1]
+                y1 = true[i, j, 2]
+                y2 = pred[i, j, 2]
                 d += _euclidian_dist(x1=x1, y1=y1, x2=x2, y2=y2)
                 counter += 1
 
@@ -90,14 +109,30 @@ def _error_on_coordinates(
 
 
 def _weighted_average_f1_score_error_coordinates(
-    pred: np.ndarray, true: np.ndarray, size: int, cell_size: int, weight: float = 1
+    pred: np.ndarray, true: np.ndarray, weight: float = 1
 ) -> float:
-    """Return (weight*(1-f1_score) + error_coordinates)/2"""
-    f1_score = _f1_score(pred, true, size, cell_size)
+    """
+    Returns weighted single score defined as: 
+    weight*(1-F1) + (error on coordinate)
+
+    F1 score will be measured within cell of size "cell_size". If cell_size = 1, F1 score
+    will be measured at resolution of pixel.
+
+    Note – direction dependent, arguments cant be switched!!
+
+    Args:
+        - pred: np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell.
+        - true: np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell
+        - weight: weight of 1-F1 score in the average
+            default = 1
+    """
+    f1_score = _f1_score(pred, true)
     f1_score = 1 - f1_score
     f1_score = f1_score * weight
 
-    error_coordinates = _error_on_coordinates(pred, true, size, cell_size)
+    error_coordinates = _error_on_coordinates(pred, true)
     if error_coordinates is not None:
         score = (f1_score + error_coordinates) / 2
         return score

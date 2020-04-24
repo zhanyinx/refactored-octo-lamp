@@ -9,6 +9,36 @@ def extract_basename(path: dir) -> str:
     return os.path.splitext(os.path.basename(path))[0]
 
 
+def _create_spot_mask(spot_coord: np.ndarray, size: int, cell_size: int) -> np.ndarray:
+    """
+    Return np.ndarray of shape (n, n, 3):
+            p, x, y format for each cell.
+    
+    Args:
+        - spot_coord (np.ndarray): List of coordinates in
+            x, y format with shape (n, 2).
+        - size (int): size of the image from which List
+            of coordinates are extracted
+        - cell_size (int): size of cell used to calculate
+            F1 score, precision and recall  
+    """
+
+    if not all(isinstance(i, int) for i in (size, cell_size)):
+        raise TypeError(
+            f"size and cell_size must be int, but are {type(size), type(cell_size)}."
+        )
+
+    img = np.zeros((size // cell_size, size // cell_size, 3))
+    for i in range(len(spot_coord)):
+        x = int(np.floor(spot_coord[i, 0])) // cell_size
+        y = int(np.floor(spot_coord[i, 1])) // cell_size
+        img[x, y, 0] = 1
+        img[x, y, 1] = spot_coord[i, 0]
+        img[x, y, 2] = spot_coord[i, 1]
+
+    return img
+
+
 def train_valid_split(
     x_list: List[dir], y_list: List[dir], valid_split: float = 0.2, shuffle: bool = True
 ) -> Iterable[List[dir]]:

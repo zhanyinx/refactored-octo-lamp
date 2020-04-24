@@ -12,7 +12,7 @@ from typing import List, Tuple
 from training.util_prepare import extract_basename
 
 
-def get_file_lists(path: dir) -> Tuple[List[dir]]:
+def trackmate_get_file_lists(path: dir) -> Tuple[List[dir]]:
     """
     Extracts file paths and checks if respective files are present.
 
@@ -53,7 +53,24 @@ def get_file_lists(path: dir) -> Tuple[List[dir]]:
     return y_list, t_list
 
 
-def group_to_numpy(label: dir, trackmate: dir, conversion: float) -> Tuple[np.ndarray]:
+def trackmate_create_spot_mask(
+    spot_coord: np.ndarray, size: int, cell_size: int
+) -> np.ndarray:
+    """Create mask image with spot"""
+    img = np.zeros((size // cell_size, size // cell_size, 3))
+    for i in range(len(spot_coord)):
+        x = int(np.floor(spot_coord[i, 0])) // cell_size
+        y = int(np.floor(spot_coord[i, 1])) // cell_size
+        img[x, y, 0] = 1
+        img[x, y, 1] = spot_coord[i, 0]
+        img[x, y, 2] = spot_coord[i, 1]
+
+    return img
+
+
+def trackmate_group_to_numpy(
+    label: dir, trackmate: dir, conversion: float, size: int, cell_size: int
+) -> Tuple[np.ndarray]:
     """ Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays. 
     """
 
@@ -74,27 +91,36 @@ def group_to_numpy(label: dir, trackmate: dir, conversion: float) -> Tuple[np.nd
     xy = xy * conversion
     xy_trackmate = xy_trackmate * conversion
 
+    xy = trackmate_create_spot_mask(xy, size, cell_size)
+    xy_trackmate = trackmate_create_spot_mask(xy_trackmate, size, cell_size)
+
     return xy, xy_trackmate
 
 
-def remove_zeros(lst: list) -> list:
+def trackmate_remove_zeros(lst: list) -> list:
     """ Removes all occurences of "0" from a list. """
     return [i for i in lst if i is not 0]
 
 
-def files_to_numpy(
-    labels: List[dir], trackmates: List[dir], conversion: float
+def trackmate_files_to_numpy(
+    labels: List[dir],
+    trackmates: List[dir],
+    conversion: float,
+    size: int,
+    cell_size: int,
 ) -> Tuple[np.ndarray]:
     """ Converts file lists into numpy arrays. """
     np_labels = []
     np_trackmate = []
 
     for label, trackmate in zip(labels, trackmates):
-        label, trackmate = group_to_numpy(label, trackmate, conversion)
+        label, trackmate = trackmate_group_to_numpy(
+            label, trackmate, conversion, size, cell_size
+        )
         np_labels.append(label)
         np_trackmate.append(trackmate)
 
-    np_labels = remove_zeros(np_labels)
-    np_trackmate = remove_zeros(np_trackmate)
+    np_labels = trackmate_remove_zeros(np_labels)
+    np_trackmate = trackmate_remove_zeros(np_trackmate)
 
     return np_labels, np_trackmate

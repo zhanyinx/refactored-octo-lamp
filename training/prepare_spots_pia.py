@@ -12,7 +12,7 @@ import sys
 sys.path.append("../")
 from typing import List, Tuple
 
-from training.util_prepare import extract_basename, train_valid_split
+from training.util_prepare import extract_basename, train_valid_split, _create_spot_mask
 
 
 def get_file_lists(path: dir) -> Tuple[List[dir]]:
@@ -31,7 +31,7 @@ def get_file_lists(path: dir) -> Tuple[List[dir]]:
         raise OSError(f"Path {path} must exist.")
     if not all(os.path.exists(os.path.join(path, i)) for i in ["images", "labels"]):
         raise OSError(f"Path {path} must contain an images/ and labels/ subdirectory.")
-    
+
     x_list = sorted(glob.glob(f"{os.path.join(path, 'images')}/*.tif"))
     y_list = sorted(glob.glob(f"{os.path.join(path, 'labels')}/*.txt"))
 
@@ -54,19 +54,21 @@ def get_file_lists(path: dir) -> Tuple[List[dir]]:
     return x_list, y_list
 
 
-def group_to_numpy(image: dir, label: dir, conversion: float) -> Tuple[np.ndarray]:
+def group_to_numpy(
+    image: dir, label: dir, conversion: float, cell_size: int
+) -> Tuple[np.ndarray]:
     """ Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays. 
     """
 
     image = skimage.io.imread(image)
     df = pd.read_table(label)
     if min(image.shape) < 512 or len(df) < 5:
-
         return 0, 0
 
     df.columns = ["x", "y"]
     xy = np.stack([df["x"].to_numpy(), df["y"].to_numpy()]).T
-    xy = xy*conversion
+    xy = xy * conversion
+    xy = _create_spot_mask(xy, len(image), cell_size)
 
     return image, xy
 
@@ -77,14 +79,14 @@ def remove_zeros(lst: list) -> list:
 
 
 def files_to_numpy(
-    images: List[dir], labels: List[dir], conversion: float
+    images: List[dir], labels: List[dir], conversion: float, cell_size: int
 ) -> Tuple[np.ndarray]:
     """ Converts file lists into numpy arrays. """
     np_images = []
     np_labels = []
 
     for image, label in zip(images, labels):
-        image, label = group_to_numpy(image, label, conversion)
+        image, label = group_to_numpy(image, label, conversion, cell_size)
         np_images.append(image)
         np_labels.append(label)
 
@@ -103,8 +105,16 @@ def _parse_args():
         "--basename",
         type=str,
         default="ds",
-        required=False,
+        required=True,
         help="Basename of dataset.",
+    )
+    parser.add_argument(
+        "-z",
+        "--cell_size",
+        type=int,
+        default=4,
+        required=True,
+        help="Size of cell in the grid for making y_true",
     )
     parser.add_argument(
         "-c",
@@ -147,9 +157,9 @@ def main():
         x_list=x_trainval, y_list=y_trainval, valid_split=args.valid_split
     )
 
-    x_train, y_train = files_to_numpy(x_train, y_train, args.conversion)
-    x_valid, y_valid = files_to_numpy(x_valid, y_valid, args.conversion)
-    x_test, y_test = files_to_numpy(x_test, y_test, args.conversion)
+    x_train, y_train = files_to_numpy(x_train, y_train, args.conversion, args.cell_size)
+    x_valid, y_valid = files_to_numpy(x_valid, y_valid, args.conversion, args.cell_size)
+    x_test, y_test = files_to_numpy(x_test, y_test, args.conversion, args.cell_size)
 
     print(f"All files*: {len(x_list)}")
     print(f"All files: {len(x_train) + len(x_valid) + len(x_test)}")
