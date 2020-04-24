@@ -22,8 +22,8 @@ def trackmate_get_file_lists(path: dir) -> Tuple[List[dir]]:
             images and labels subdirectories.
 
     Returns:
-        - y_list, t_list: Lists of absolute file paths for the files found
-            in the labels and trackmate subdirectories.
+        - x_list, y_list, t_list: Lists of absolute file paths for the files found
+            in the images, labels and trackmate subdirectories.
     """
     if not os.path.exists(path):
         raise OSError(f"Path {path} must exist.")

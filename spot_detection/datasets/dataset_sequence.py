@@ -27,7 +27,12 @@ class DatasetSequence(tf.keras.utils.Sequence):
         self.format_fn = format_fn
 
     def __len__(self) -> int:
-        """ Returns length of the dataset. """
+        """ Returns length of the dataset in unit of batch size"""
+
+        if len(self.x)<= self.batch_size:
+            print("Warning! barch size larger than dataset, setting batch size to length of dataset")
+            self.batch_size = len(self.x)
+        
         return int(np.floor(len(self.x) / self.batch_size))
 
     def __getitem__(self, idx) -> Tuple[np.ndarray]:
