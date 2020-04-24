@@ -54,7 +54,7 @@ class Model:
         dataset: Dataset,
         augment_val: bool = True,
         callbacks: list = None,
-    ):
+    ) -> None:
         if callbacks is None:
             callbacks = []
 
@@ -95,8 +95,8 @@ class Model:
         preds = self.network.predict(sequence)
         return np.mean(np.square(preds) - np.square(y))
 
-    def load_weights(self):
+    def load_weights(self) -> None:
         self.network.load_weights(self.train_args["pretrained"])
 
-    def save_weights(self):
+    def save_weights(self) -> None:
         self.network.save_weights(self.weights_filename)
