@@ -1,5 +1,5 @@
-from image_segmentation.datasets.dataset import Dataset
-from image_segmentation.models.base import Model
+from spot_detection.datasets.dataset import Dataset
+from spot_detection.models.base import Model
 import importlib
 import platform
 import sys
@@ -7,6 +7,7 @@ import tensorflow as tf
 import time
 import wandb
 from typing import Dict
+
 sys.path.append("../")
 
 
@@ -43,8 +44,9 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
         wandb.log({"Ground truth": ground_truth}, commit=False)
 
         predictions = [
-            wandb.Image(self.model_wrapper.predict_on_image(
-                image), caption=f"Prediction: {i}")
+            wandb.Image(
+                self.model_wrapper.predict_on_image(image), caption=f"Prediction: {i}"
+            )
             for i, image in enumerate(self.valid_images)
         ]
         wandb.log({"Predictions": predictions}, commit=False)
@@ -54,10 +56,11 @@ def train_model(model: Model, dataset: Dataset) -> Model:
     """ Model training with wandb callbacks. """
 
     wandb_callback = wandb.keras.WandbCallback()
-    image_callback = WandbImageLogger(model, dataset)
+    # image_callback = WandbImageLogger(model, dataset)
     saver_callback = tf.keras.callbacks.ModelCheckpoint(
-        f"../models/model_{int(time.time())}.h5", save_best_only=False,)
-    callbacks = [wandb_callback, image_callback, saver_callback]
+        f"../models/model_{int(time.time())}.h5", save_best_only=False,
+    )
+    callbacks = [wandb_callback, saver_callback]
 
     tic = time.time()
     _history = model.fit(dataset=dataset, callbacks=callbacks)
@@ -88,14 +91,11 @@ def run_experiment(cfg: Dict, save_weights: bool = False):
         - save_weights: If model weights should be saved.
     """
 
-    dataset_class_ = get_from_module(
-        "image_segmentation.datasets", cfg["dataset"])
-    model_class_ = get_from_module("image_segmentation.models", cfg["model"])
-    network_fn_ = get_from_module(
-        "image_segmentation.networks", cfg["network"])
-    optimizer_fn_ = get_from_module(
-        "image_segmentation.optimizers", cfg["optimizer"])
-    loss_fn_ = get_from_module("image_segmentation.losses", cfg["loss"])
+    dataset_class_ = get_from_module("spot_detection.datasets", cfg["dataset"])
+    model_class_ = get_from_module("spot_detection.models", cfg["model"])
+    network_fn_ = get_from_module("spot_detection.networks", cfg["network"])
+    optimizer_fn_ = get_from_module("spot_detection.optimizers", cfg["optimizer"])
+    loss_fn_ = get_from_module("spot_detection.losses", cfg["loss"])
 
     network_args = cfg.get("network_args", {})
     dataset_args = cfg.get("dataset_args", {})
@@ -111,13 +111,13 @@ def run_experiment(cfg: Dict, save_weights: bool = False):
         optimizer_fn=optimizer_fn_,
         train_args=train_args,
         dataset_args=dataset_args,
-        network_args=network_args
+        network_args=network_args,
     )
 
     cfg["system"] = {
         "gpus": tf.config.list_logical_devices("GPU"),
         "version": platform.version(),
-        "platform": platform.platform()
+        "platform": platform.platform(),
     }
 
     wandb.init(project=cfg["name"], config=cfg)

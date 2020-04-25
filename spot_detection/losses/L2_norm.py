@@ -1,6 +1,6 @@
 import tensorflow.keras.backend as K
 import tensorflow as tf
-from f1_score import f1_score_loss
+from .f1_score import f1_score_loss, f1_score
 
 
 def l2_norm(y_true, y_pred):

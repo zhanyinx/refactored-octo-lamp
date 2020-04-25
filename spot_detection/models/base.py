@@ -26,8 +26,8 @@ class Model:
         train_args: Dict,
         dataset_args: Dict,
         network_args: Dict,
-        batch_format_fn: Callable,
-        batch_augment_fn: Callable,
+        batch_format_fn: Callable = None,
+        batch_augment_fn: Callable = None,
     ):
         self.name = f"{DATESTRING}_{self.__class__.__name__}_{dataset_cls.__name__}_{network_fn.__name__}"
 
@@ -91,7 +91,7 @@ class Model:
             validation_data=valid_sequence,
             # use_multiprocessing=False,
             # workers=1,
-            shuffle=True,
+            #shuffle=True,
         )
 
     def evaluate(self, x: np.ndarray, y: np.ndarray) -> float:
