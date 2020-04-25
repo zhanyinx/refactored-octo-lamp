@@ -8,10 +8,9 @@ import pandas as pd
 import secrets
 import skimage.io
 import sys
-
-sys.path.append("../")
 from typing import List, Tuple
 
+sys.path.append("../")
 from training.util_prepare import extract_basename, train_valid_split, get_prediction_matrix
 
 

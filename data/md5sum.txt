@@ -1,3 +1,5 @@
-4ba5fbb7bb2acced85a1248e6ea6a6fd  pia_spots_158f6bd5.test_baseline.csv
-8d1fd51a00c539a1820ad72f8fd0ad58  pia_spots_158f6bd5.train_baseline.csv
-97094c880afc7983d390931e5d1e6e42  pia_spots_158f6bd5.valid_baseline.csv
+66073e11bbd3e4d4e83566eeb5e8be0b  pia_spots_158f6bd5.npz
+dd7eb00675d3094ddc04c7a5d980c7e2  spots_synt4_af4f7386.npz
+a2719ab9615e47a128efa819b45a4c02  spots_synt4_af4f7386.test_baseline.csv
+31dce10b1217144e4337138aecd69eb2  spots_synt4_af4f7386.train_baseline.csv
+b543525bdfe47b3e24bd4985f80958b7  spots_synt4_af4f7386.valid_baseline.csv
