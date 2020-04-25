@@ -1,0 +1,32 @@
+{
+    "root": "/tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp",
+    "program": "../training/run_experiment.py",
+    "git": {
+        "remote": "git@github.com:zhanyinx/refactored-octo-lamp.git",
+        "commit": "849d595871b22a78213fbca566a8e5fc16b58d69"
+    },
+    "email": null,
+    "codePath": "training/run_experiment.py",
+    "startedAt": "2020-04-25T17:12:42.320732",
+    "host": "xenon6.fmi.ch",
+    "username": "zhanyinx",
+    "executable": "/tungstenfs/scratch/ggiorget/zhan/bin/anaconda3/envs/tf/bin/python",
+    "os": "Linux-3.10.0-1062.18.1.el7.x86_64-x86_64-with-centos-7.7.1908-Core",
+    "python": "3.7.6",
+    "gpu": "GeForce RTX 2080 Ti",
+    "gpu_count": 8,
+    "cpu_count": 96,
+    "cuda": "10.0.130",
+    "args": [
+        "--gpu",
+        "3",
+        "--config",
+        "../training/experiments/spots.yaml"
+    ],
+    "state": "killed",
+    "jobType": null,
+    "mode": "run",
+    "project": "octo-guacamole-spots",
+    "heartbeatAt": "2020-04-25T19:01:13.475561",
+    "exitcode": 255
+}

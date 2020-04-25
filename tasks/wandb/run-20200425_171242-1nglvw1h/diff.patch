@@ -1,0 +1,10 @@
+diff --git a/tasks/run_experiment.sh b/tasks/run_experiment.sh
+index 072293c..66d38fe 100644
+--- a/tasks/run_experiment.sh
++++ b/tasks/run_experiment.sh
+@@ -1,4 +1,4 @@
+ #!/bin/bash
+ python ../training/run_experiment.py\
+-    --gpu 0\
++    --gpu 3\
+     --config ../training/experiments/spots.yaml 
