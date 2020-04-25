@@ -1,4 +1,4 @@
-# efactored-octo-lamp
+# refactored-octo-lamp
 Experiments for spot detection.
 
-Tasks can be executed via the shell scrips in the `tasks` folder.
+[Quick access to kanban.](https://github.com/zhanyinx/refactored-octo-lamp/projects/2)
