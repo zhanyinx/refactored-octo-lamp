@@ -57,7 +57,8 @@ class Model:
         return ["accuracy"]
 
     def fit(
-        self, dataset: Dataset, augment_val: bool = True, callbacks: list = None,
+        self, dataset: Dataset, augment_val: bool = True, callbacks: list = None
+        ,
     ) -> None:
         if callbacks is None:
             callbacks = []
