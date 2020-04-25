@@ -22,7 +22,7 @@ sys.path.append("../")
 
 import training.util_metrics
 import training.util_trackmate
-from training.util_prepare import _create_spot_mask
+from training.util_prepare import get_prediction_matrix
 
 
 def load_trackmate_data(
@@ -83,11 +83,13 @@ def detect_spots(input_image: np.ndarray, cell_size: int) -> np.ndarray:
     )
 
     xy = np.stack([blobs[..., 1], blobs[..., 0]]).T
-    xy = _create_spot_mask(xy, len(img), cell_size)
+    xy = get_prediction_matrix(xy, len(img), cell_size)
     return xy
 
 
-def compute_score(true: np.ndarray, pred: np.ndarray, weight: float) -> pd.DataFrame:
+def compute_score(
+    true: np.ndarray, pred: np.ndarray, cell_size: int, weight: float
+) -> pd.DataFrame:
     """
     Compute F1 score, error on coordinate and a weighted average of the two.
     Return pd.DataFrame with scores
@@ -99,19 +101,25 @@ def compute_score(true: np.ndarray, pred: np.ndarray, weight: float) -> pd.DataF
             p, x, y format for each cell.
         - true: list of np.ndarray of shape (n, n, 3):
             p, x, y format for each cell
+        - cell_size: size of cells in the grid used to calculate
+            F1 score, relative coordinates
+        -weight: weight to on f1 score
     """
     f1_score = pd.Series(
         [training.util_metrics._f1_score(p, t) for p, t in zip(true, pred)]
     )
 
     err_coordinate = pd.Series(
-        [training.util_metrics._error_on_coordinates(p, t) for p, t in zip(true, pred)]
+        [
+            training.util_metrics._error_on_coordinates(p, t, cell_size)
+            for p, t in zip(true, pred)
+        ]
     )
 
     weighted_f1_score_error_coordinates = pd.Series(
         [
             training.util_metrics._weighted_average_f1_score_error_coordinates(
-                p, t, weight
+                p, t, cell_size, weight
             )
             for p, t in zip(true, pred)
         ]
@@ -180,7 +188,9 @@ def main():
         images, label_true, label_trackmate = load_trackmate_data(
             path=trackmate, conversion=conversion, size=size, cell_size=cell_size
         )
-        df = compute_score(true=label_true, pred=label_trackmate, weight=weight)
+        df = compute_score(
+            true=label_true, pred=label_trackmate, cell_size=cell_size, weight=weight
+        )
         df_describe = df.describe()
         df_describe.to_csv(
             f"{os.path.splitext(args.trackmate)[0]}_trackmate_baseline.csv"
@@ -210,7 +220,7 @@ def main():
             [train_pred, valid_pred, test_pred],
             ["train", "valid", "test"],
         ):
-            df = compute_score(true=true, pred=pred, weight=weight,)
+            df = compute_score(true=true, pred=pred, cell_size=cell_size, weight=weight)
             df_describe = df.describe()
             df_describe.to_csv(
                 f"{os.path.splitext(args.dataset)[0]}.{name}_baseline.csv"

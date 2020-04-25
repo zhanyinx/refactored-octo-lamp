@@ -9,7 +9,7 @@ def extract_basename(path: dir) -> str:
     return os.path.splitext(os.path.basename(path))[0]
 
 
-def _create_spot_mask(spot_coord: np.ndarray, size: int, cell_size: int) -> np.ndarray:
+def get_prediction_matrix(spot_coord: np.ndarray, size: int, cell_size: int) -> np.ndarray:
     """
     Return np.ndarray of shape (n, n, 3):
             p, x, y format for each cell.
@@ -28,15 +28,17 @@ def _create_spot_mask(spot_coord: np.ndarray, size: int, cell_size: int) -> np.n
             f"size and cell_size must be int, but are {type(size), type(cell_size)}."
         )
 
-    img = np.zeros((size // cell_size, size // cell_size, 3))
-    for i in range(len(spot_coord)):
-        x = int(np.floor(spot_coord[i, 0])) // cell_size
-        y = int(np.floor(spot_coord[i, 1])) // cell_size
-        img[x, y, 0] = 1
-        img[x, y, 1] = spot_coord[i, 0]
-        img[x, y, 2] = spot_coord[i, 1]
+    pred = np.zeros((size // cell_size, size // cell_size, 3))
+    for s in range(len(spot_coord)):
+        i = int(np.floor(spot_coord[s, 0])) // cell_size
+        j = int(np.floor(spot_coord[s, 1])) // cell_size
+        rel_x = (spot_coord[s, 0] - i* cell_size)/ cell_size
+        rel_y = (spot_coord[s, 1] - j* cell_size)/ cell_size
+        pred[i, j, 0] = 1
+        pred[i, j, 1] = rel_x
+        pred[i, j, 2] = rel_y
 
-    return img
+    return pred
 
 
 def train_valid_split(

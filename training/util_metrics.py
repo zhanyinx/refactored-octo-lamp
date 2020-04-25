@@ -74,7 +74,9 @@ def _f1_score(pred: np.ndarray, true: np.ndarray) -> float:
     return f1_score
 
 
-def _error_on_coordinates(pred: np.ndarray, true: np.ndarray) -> List[float]:
+def _error_on_coordinates(
+    pred: np.ndarray, true: np.ndarray, cell_size: int
+) -> List[float]:
     """
     Returns average error on spot coordinates.
 
@@ -83,6 +85,8 @@ def _error_on_coordinates(pred: np.ndarray, true: np.ndarray) -> List[float]:
             p, x, y format for each cell.
         - true: np.ndarray of shape (n, n, 3):
             p, x, y format for each cell
+        - cell_size (int): size of cell used to calculate
+            F1 score, precision and recall   
     """
 
     spot = (true[..., 0] == 1) & (pred[..., 0] == 1)
@@ -93,10 +97,10 @@ def _error_on_coordinates(pred: np.ndarray, true: np.ndarray) -> List[float]:
     for i in range(len(pred)):
         for j in range(len(pred)):
             if spot[i, j]:
-                x1 = true[i, j, 1]
-                x2 = pred[i, j, 1]
-                y1 = true[i, j, 2]
-                y2 = pred[i, j, 2]
+                x1 = true[i, j, 1] * cell_size
+                x2 = pred[i, j, 1] * cell_size
+                y1 = true[i, j, 2] * cell_size
+                y2 = pred[i, j, 2] * cell_size
                 d += _euclidian_dist(x1=x1, y1=y1, x2=x2, y2=y2)
                 counter += 1
 
@@ -109,7 +113,7 @@ def _error_on_coordinates(pred: np.ndarray, true: np.ndarray) -> List[float]:
 
 
 def _weighted_average_f1_score_error_coordinates(
-    pred: np.ndarray, true: np.ndarray, weight: float = 1
+    pred: np.ndarray, true: np.ndarray, cell_size:int, weight: float = 1
 ) -> float:
     """
     Returns weighted single score defined as: 
@@ -125,6 +129,8 @@ def _weighted_average_f1_score_error_coordinates(
             p, x, y format for each cell.
         - true: np.ndarray of shape (n, n, 3):
             p, x, y format for each cell
+        - cell_size: size of cells in the grid used to calculate
+            F1 score, relative coordinates
         - weight: weight of 1-F1 score in the average
             default = 1
     """
@@ -132,7 +138,7 @@ def _weighted_average_f1_score_error_coordinates(
     f1_score = 1 - f1_score
     f1_score = f1_score * weight
 
-    error_coordinates = _error_on_coordinates(pred, true)
+    error_coordinates = _error_on_coordinates(pred, true, cell_size)
     if error_coordinates is not None:
         score = (f1_score + error_coordinates) / 2
         return score

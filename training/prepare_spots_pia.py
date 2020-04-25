@@ -12,7 +12,7 @@ import sys
 sys.path.append("../")
 from typing import List, Tuple
 
-from training.util_prepare import extract_basename, train_valid_split, _create_spot_mask
+from training.util_prepare import extract_basename, train_valid_split, get_prediction_matrix
 
 
 def get_file_lists(path: dir) -> Tuple[List[dir]]:
@@ -70,7 +70,7 @@ def group_to_numpy(
     df.columns = ["x", "y"]
     xy = np.stack([df["x"].to_numpy(), df["y"].to_numpy()]).T
     xy = xy * conversion
-    xy = _create_spot_mask(xy, len(image), cell_size)
+    xy = get_prediction_matrix(xy, len(image), cell_size)
 
     return image, xy
 
