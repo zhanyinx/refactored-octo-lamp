@@ -3,6 +3,8 @@ Prepares a dataset from an folder containing .tif images and .csv labels structu
 As usually generated synthetically in Fiji.
 """
 
+from training.util_prepare import extract_basename, train_valid_split
+from typing import List, Tuple
 import argparse
 import glob
 import itertools
@@ -14,9 +16,6 @@ import secrets
 import skimage.io
 import sys
 sys.path.append("../")
-from typing import List, Tuple
-
-from training.util_prepare import extract_basename, train_valid_split
 
 
 def get_file_lists(path: dir) -> Tuple[List[dir]]:
@@ -33,7 +32,7 @@ def get_file_lists(path: dir) -> Tuple[List[dir]]:
     """
     if not os.path.exists(path):
         raise OSError(f"Path {path} must exist.")
-    
+
     x_list = sorted(glob.glob(f"{path}*.tif"))
     y_list = sorted(glob.glob(f"{path}*.csv"))
 
@@ -57,7 +56,7 @@ def get_file_lists(path: dir) -> Tuple[List[dir]]:
 
 def import_data(x_list: List[dir], y_list: List[dir]) -> Tuple[np.ndarray, pd.DataFrame]:
     """ Opens files from lists as images and DataFrames. """
-    
+
     images, labels = [], []
     n_images = 0
     for x, y in zip(x_list, y_list):
@@ -83,12 +82,23 @@ def import_data(x_list: List[dir], y_list: List[dir]) -> Tuple[np.ndarray, pd.Da
     return images, df
 
 
-def get_prediction_matrix(x_coords, y_coords, size_image=512, size_grid=64):
+def get_prediction_matrix(x_coords: List[float],
+                          y_coords: List[float],
+                          size_image: int = 512,
+                          size_grid: int = 64) -> np.ndarray:
     """
     Returns a matrix containing information on whether a cell inside the
     image-wide grid contains 1+ spots or not.
     Additionally, the relative spot coordinates (x, y) are in the second and
     third z-dimension respectively.
+
+    Args:
+        - x_coords: List of all x-coordinates.
+        - y_coords: List of matching y-coordinates.
+        - size_image: Default image size to lay the grid on.
+        - size_grid: Number of grid cells to be used.
+    Returns:
+        - matrix: Matrix representation of spot coordinates.
     """
 
     size_gridcell = size_image // size_grid
@@ -97,15 +107,16 @@ def get_prediction_matrix(x_coords, y_coords, size_image=512, size_grid=64):
     # Top left coordinates of every cell
     grid = np.array([x * size_gridcell for x in range(size_grid)])
 
+    # TODO use np.where instead.
     for x, y in itertools.product(range(size_grid), range(size_grid)):
 
         grid_x = grid[x]
         grid_y = grid[y]
 
         curr_select = ((x_coords >= grid_x) &
-                        (x_coords < grid_x + size_gridcell) &
-                        (y_coords >= grid_y) &
-                        (y_coords < grid_y + size_gridcell))
+                       (x_coords < grid_x + size_gridcell) &
+                       (y_coords >= grid_y) &
+                       (y_coords < grid_y + size_gridcell))
 
         spot_x = x_coords[curr_select]
         spot_y = y_coords[curr_select]
@@ -123,10 +134,20 @@ def get_prediction_matrix(x_coords, y_coords, size_image=512, size_grid=64):
     return matrix
 
 
-def get_coordinate_list(matrix, size_image=512, size_grid=64):
+def get_coordinate_list(matrix: np.ndarray,
+                        size_image: int = 512,
+                        size_grid: int = 64) -> np.ndarray:
     """
     Converts the prediction matrix into a list of coordinates.
-    Note - if plotting with plt.scatter, x and y must be reversed.
+
+    Note - if plotting with plt.scatter, x and y must be reversed!
+
+    Args:
+        - matrix: Matrix representation of spot coordinates.
+        - size_image: Default image size the grid was layed on.
+        - size_grid: Number of grid cells used.
+    Returns:
+        - Array of x, y coordinates with the shape (n, 2).
     """
 
     size_gridcell = size_image // size_grid
@@ -136,6 +157,7 @@ def get_coordinate_list(matrix, size_image=512, size_grid=64):
     # Top left coordinates of every cell
     grid = np.array([x * size_gridcell for x in range(size_grid)])
 
+    # TODO use np.where instead.
     for x, y in itertools.product(range(matrix.shape[0]), range(matrix.shape[1])):
 
         if matrix[x, y, 0] > 0.5:
@@ -155,7 +177,9 @@ def get_coordinate_list(matrix, size_image=512, size_grid=64):
     return np.array([coords_x, coords_y])
 
 
-def get_relative_coordinates(coord_spot, coord_cell, size_gridcell=8):
+def get_relative_coordinates(coord_spot: Tuple[float],
+                             coord_cell: Tuple[float],
+                             size_gridcell: int = 8) -> Tuple[float]:
     """
     Returns the relative cell coordinates from absolute image coordinates.
     """
@@ -166,7 +190,9 @@ def get_relative_coordinates(coord_spot, coord_cell, size_gridcell=8):
     return coord_rel
 
 
-def get_absolute_coordinates(coord_spot, coord_cell, size_gridcell=8):
+def get_absolute_coordinates(coord_spot: Tuple[float],
+                             coord_cell: Tuple[float],
+                             size_gridcell: int = 8) -> Tuple[float]:
     """
     Returns the absolute image coordinates from relative cell coordinates.
     """
@@ -188,7 +214,7 @@ def files_to_numpy(images: List[dir], labels: List[dir], cell_size: int = 4) -> 
         x = curr_df['x'].to_numpy()
         y = curr_df['y'].to_numpy()
         np_labels.append(get_prediction_matrix(x, y, size_grid=512//cell_size))
-    
+
     np_images /= 255
     np_labels = np.array(np_labels)
 
