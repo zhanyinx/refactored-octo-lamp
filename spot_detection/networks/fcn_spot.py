@@ -8,7 +8,7 @@ def fcn(n_channels: int = 3) -> tf.keras.models.Model:
 
     i = 5
 
-    inputs = tf.keras.layers.Input(shape=(512, 512, 1))
+    inputs = tf.keras.layers.Input(shape=(512, 512, n_channels))
 
     # Down: 512 -> 256
     x = tf.keras.layers.Conv2D(filters=2**(i), strides=1, **OPTIONS_CONV)(inputs)
