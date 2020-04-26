@@ -6,7 +6,7 @@ from typing import Callable, Dict, Tuple
 from spot_detection.datasets.dataset_spots import SpotsDataset
 from spot_detection.datasets.dataset_sequence import DatasetSequence
 from spot_detection.losses.f1_score import f1_score
-from spot_detection.losses.L2_norm import l2_norm
+from spot_detection.losses.L2_norm import l2_norm, f1_l2_combined_loss
 from spot_detection.models.base import Model
 from spot_detection.models.util import random_cropping, next_power
 from spot_detection.networks.fcn import fcn
