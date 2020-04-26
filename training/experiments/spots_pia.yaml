@@ -2,12 +2,12 @@ name: "pia_spots_f1_score_coordinate_loss"
 comments: "Pia spots full dataset"
 dataset: "SpotsDataset"
 dataset_args:
-    version: "pia_spots_158f6bd5.npz"
+    version: "pia_spots_158f6bd5"
 model: "SpotsModel"
 network: "fcn"
 network_args:
     n_channels: 1
-loss: "f1_l2_combined_loss"
+loss: "binary_cross_entropy"
 optimizer: "adam"
 train_args:
     batch_size: 1

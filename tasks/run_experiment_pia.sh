@@ -1,4 +1,4 @@
 #!/bin/bash
 python ../training/run_experiment.py\
-    --gpu 3\
+    --gpu 0\
     --config ../training/experiments/spots_pia.yaml 

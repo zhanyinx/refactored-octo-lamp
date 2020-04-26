@@ -50,7 +50,7 @@ class SpotsModel(Model):
 
     @property
     def metrics(self) -> list:
-        return ["accuracy", "mse", f1_score, l2_norm]
+        return ["accuracy", "mse", f1_score, l2_norm, f1_l2_combined_loss]
 
     def evaluate(self, x: np.ndarray, y: np.ndarray) -> float:
         """ Evaluates on a batch of images / masks. """
