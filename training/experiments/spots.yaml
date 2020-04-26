@@ -1,4 +1,4 @@
-name: "octo-guacamole-spots"
+name: "octo-lamp"
 comments: "Spot overfitting."
 dataset: "SpotsDataset"
 dataset_args:
@@ -6,7 +6,7 @@ dataset_args:
 model: "SpotsModel"
 network: "fcn"
 network_args:
-    n_channels: 1
+    n_channels: 3
 loss: "binary_crossentropy"
 optimizer: "adam"
 train_args:

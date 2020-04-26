@@ -57,15 +57,15 @@ class Model:
         return ["accuracy"]
 
     def fit(
-        self, dataset: Dataset, augment_val: bool = True, callbacks: list = None
-        ,
+        self, dataset: Dataset, augment_val: bool = True, callbacks: list = None,
     ) -> None:
         if callbacks is None:
             callbacks = []
 
         self.network.compile(
             loss=self.loss_fn,
-            optimizer=self.optimizer_fn(float(self.train_args["learning_rate"])),
+            optimizer=self.optimizer_fn(
+                float(self.train_args["learning_rate"])),
             metrics=self.metrics,
         )
 
@@ -89,14 +89,15 @@ class Model:
             epochs=self.train_args["epochs"],
             callbacks=callbacks,
             validation_data=valid_sequence,
+            shuffle=True,
             # use_multiprocessing=False,
             # workers=1,
-            #shuffle=True,
         )
 
     def evaluate(self, x: np.ndarray, y: np.ndarray) -> float:
         """Evaluate model."""
-        sequence = DatasetSequence(x, y, batch_size=self.train_args["batch_size"])
+        sequence = DatasetSequence(
+            x, y, batch_size=self.train_args["batch_size"])
         preds = self.network.predict(sequence)
         return np.mean(np.square(preds) - np.square(y))
 

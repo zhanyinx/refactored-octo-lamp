@@ -29,10 +29,11 @@ class DatasetSequence(tf.keras.utils.Sequence):
     def __len__(self) -> int:
         """ Returns length of the dataset in unit of batch size"""
 
-        if len(self.x)<= self.batch_size:
-            print("Warning! barch size larger than dataset, setting batch size to length of dataset")
+        if len(self.x) <= self.batch_size:
+            print(
+                "Warning! barch size larger than dataset, setting batch size to length of dataset")
             self.batch_size = len(self.x)
-        
+
         return int(np.floor(len(self.x) / self.batch_size))
 
     def __getitem__(self, idx) -> Tuple[np.ndarray]:
@@ -46,7 +47,7 @@ class DatasetSequence(tf.keras.utils.Sequence):
 
         if self.format_fn:
             batch_x, batch_y = self.format_fn(batch_x, batch_y)
-        
+
         if self.augment_fn:
             batch_x, batch_y = self.augment_fn(batch_x, batch_y)
 
@@ -56,7 +57,8 @@ class DatasetSequence(tf.keras.utils.Sequence):
             batch_y = np.expand_dims(batch_y, -1)
 
         return batch_x, batch_y
-        
+
     def on_epoch_end(self) -> None:
         """ Shuffle data. """
+        # print("Running shuffling.")
         self.x, self.y = _shuffle(self.x, self.y)
