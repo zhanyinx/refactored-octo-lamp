@@ -37,7 +37,7 @@ class DatasetSequence(tf.keras.utils.Sequence):
 
     def __getitem__(self, idx) -> Tuple[np.ndarray]:
         """ Return a single batch. """
-        idx = 0  # Overfit to just one batch
+#        idx = 0  # Overfit to just one batch
         begin = idx * self.batch_size
         end = (idx + 1) * self.batch_size
 

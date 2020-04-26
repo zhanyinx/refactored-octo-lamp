@@ -26,4 +26,4 @@ def l2_norm(y_true, y_pred):
 
 
 def f1_l2_combined_loss(y_true, y_pred):
-    return l2_norm(y_true, y_pred) + 10 * f1_score_loss(y_true, y_pred)
+    return l2_norm(y_true, y_pred) + f1_score_loss(y_true, y_pred)
