@@ -1,5 +1,3 @@
-from spot_detection.datasets.dataset import Dataset
-from spot_detection.models.base import Model
 import importlib
 import platform
 import sys
@@ -7,8 +5,10 @@ import tensorflow as tf
 import time
 import wandb
 from typing import Dict
-
 sys.path.append("../")
+
+from spot_detection.datasets.dataset import Dataset
+from spot_detection.models.base import Model
 
 
 def get_from_module(path: str, attribute: str) -> type:
@@ -19,7 +19,7 @@ def get_from_module(path: str, attribute: str) -> type:
 
 
 class WandbImageLogger(tf.keras.callbacks.Callback):
-    """ 
+    """
     Custom image prediction logger callback in wandb.
     Expects segmentation images and the model class to have a predict_on_image method.
     """
@@ -31,39 +31,54 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
         self.valid_masks = dataset.y_valid[:example_count]
 
     def on_epoch_end(self, epoch, logs=None):
-        # original = [
-        #     wandb.Image(image, caption=f"Ground truth: {i}")
-        #     for i, image in enumerate(self.valid_images)
-        # ]
-        # wandb.log({"Original": original}, commit=False)
-
         ground_truth = [
-            wandb.Image(image, caption=f"Ground truth: {i}")
+            wandb.Image(image,
+                        caption=f"Ground truth: {i}")
             for i, image in enumerate(self.valid_masks)
         ]
         wandb.log({"Ground truth": ground_truth}, commit=False)
 
         predictions = [
-            wandb.Image(
-                self.model_wrapper.predict_on_image(image), caption=f"Prediction: {i}"
-            )
+            wandb.Image(self.model_wrapper.predict_on_image(image),
+                        caption=f"Prediction: {i}")
             for i, image in enumerate(self.valid_images)
         ]
         wandb.log({"Predictions": predictions}, commit=False)
+
+
+class DataShuffler(tf.keras.callbacks.Callback):
+    """
+    Temporary on_epoch_end data shuffling as tf v2.1.0 has the known bug
+    of not calling on_epoch_end for tf.keras.utils.Sequence classes.
+    """
+
+    def __init__(self):
+        pass
+
+    def on_epoch_end(self, epoch, logs=None):
+        # print("GLOBAL")
+        # print([v for v in globals().keys() if not v.startswith('_')])
+        # Access to the global variable "Dataset" here,
+        # one should shuffle here or what I ended up doing
+        # in the model base class added "shuffle=True" for ".fit"
+        # this will only shuffle training data.
+        pass
 
 
 def train_model(model: Model, dataset: Dataset) -> Model:
     """ Model training with wandb callbacks. """
 
     wandb_callback = wandb.keras.WandbCallback()
-    # image_callback = WandbImageLogger(model, dataset)
+    image_callback = WandbImageLogger(model, dataset)
     saver_callback = tf.keras.callbacks.ModelCheckpoint(
         f"../models/model_{int(time.time())}.h5", save_best_only=False,
     )
-    callbacks = [wandb_callback, saver_callback]
+    shuffle_callback = DataShuffler()
+    callbacks = [wandb_callback, image_callback,
+                 saver_callback, shuffle_callback]
 
     tic = time.time()
-    _history = model.fit(dataset=dataset, callbacks=callbacks)
+    _ = model.fit(dataset=dataset, callbacks=callbacks)
     print("Training took {:2f} s".format(time.time() - tic))
 
     return model
@@ -94,7 +109,8 @@ def run_experiment(cfg: Dict, save_weights: bool = False):
     dataset_class_ = get_from_module("spot_detection.datasets", cfg["dataset"])
     model_class_ = get_from_module("spot_detection.models", cfg["model"])
     network_fn_ = get_from_module("spot_detection.networks", cfg["network"])
-    optimizer_fn_ = get_from_module("spot_detection.optimizers", cfg["optimizer"])
+    optimizer_fn_ = get_from_module(
+        "spot_detection.optimizers", cfg["optimizer"])
     loss_fn_ = get_from_module("spot_detection.losses", cfg["loss"])
 
     network_args = cfg.get("network_args", {})

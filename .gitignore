@@ -1,0 +1,12 @@
+# Folders
+*wandb/
+__pycache__/
+.vscode/
+.ipynb_checkpoints/
+
+# Hidden files
+*.profraw
+*.DS_Store
+
+# Large files
+*.h5
