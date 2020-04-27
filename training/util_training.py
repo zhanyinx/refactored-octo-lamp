@@ -19,9 +19,6 @@ def get_from_module(path: str, attribute: str) -> type:
     attribute = getattr(module, attribute)
     return attribute
 
-def plot_spots_on_image(ax, img: np.ndarray, true: np.ndarray):
-    """"Plot coordinates on image"""
-
 
 class WandbImageLogger(tf.keras.callbacks.Callback):
     """
@@ -32,35 +29,36 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
     def __init__(self, model_wrapper: Model, dataset: Dataset, example_count: int = 4):
         super().__init__()
         self.model_wrapper = model_wrapper
-        self.valid_images = dataset.x_valid[:example_count]
-        self.valid_masks = dataset.y_valid[:example_count]
+        self.valid_images = dataset.x_train[:example_count]
+        self.valid_masks = dataset.y_train[:example_count]
 
     def on_epoch_end(self, epoch, logs=None):
+
         ground_truth = []
-        for i, image in enumerate(self.valid_masks):
+        for i, mask in enumerate(self.valid_masks):
+            plt.figure()
             plt.imshow(self.valid_images[i])
-            coordList = get_coordinate_list(matrix = image, size_image = 512, size_grid = 128)
-            plt.scatter(coordList[...,0], coordList[...,1])
-            plt.show()
-            ground_truth.append(
-                wandb.Image(plt,caption=f"Ground truth: {i}")
-            )
+            coordList = get_coordinate_list(matrix = mask, size_image = 512, size_grid = 128)
+            plt.scatter(coordList[...,0], coordList[...,1], marker = "+", color = "r", s = 10)
+            ground_truth.append(wandb.Image(plt, caption=f"Ground truth: {i}"))
+
+        wandb.log({f"Ground truth": ground_truth}, commit=False)
         
-        wandb.log({"Ground truth": ground_truth}, commit=False)
 
         predictions = []
         for i, image in enumerate(self.valid_images):
-            plt.imshow(self.image[i])
-            pred =self.model_wrapper.predict_on_image(image)
-            coordList = get_coordinate_list(matrix = pred, size_image = 512, size_grid = 128)
-            plt.scatter(coordList[...,0], coordList[...,1])
-            plt.show()
-            predictions.append(
-                wandb.Image(plt,caption=f"Prediction: {i}")
-            )
-        
-        wandb.log({"Predictions": predictions}, commit=False)
+            plt.figure()
+            plt.imshow(image)
+            pred_mask = self.model_wrapper.predict_on_image(image)
+            coordList = get_coordinate_list(matrix = pred_mask, size_image = 512, size_grid = 128)
+            plt.scatter(coordList[...,0], coordList[...,1], marker = "+", color = "r", s = 10)
+            predictions.append(wandb.Image(plt, caption=f"Prediction: {i}"))
 
+        wandb.log({f"Predictions {i}": predictions}, commit=False)
+
+        plt.close()
+
+      
         #ground_truth = [
         #    wandb.Image(image,
         #                caption=f"Ground truth: {i}")

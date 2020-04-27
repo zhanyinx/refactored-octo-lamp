@@ -1,4 +1,4 @@
-name: "pia_spots_f1_score_coordinate_loss"
+name: "pia_spots"
 comments: "Pia spots full dataset"
 dataset: "SpotsDataset"
 dataset_args:
@@ -13,3 +13,4 @@ train_args:
     batch_size: 1
     epochs: 1000
     learning_rate: 3e-4
+    pretrained: "/work2/scratch/guacamole-models/model_1587921377.h5"
