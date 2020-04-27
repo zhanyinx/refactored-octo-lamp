@@ -31,20 +31,9 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
         self.model_wrapper = model_wrapper
         self.valid_images = dataset.x_valid[:example_count]
         self.train_images = dataset.x_train[:example_count]
-        self.valid_masks = dataset.y_train[:example_count]
+        self.train_masks = dataset.y_train[:example_count]
 
     def on_epoch_end(self, epoch, logs=None):
-
-        ground_truth = []
-        for i, mask in enumerate(self.valid_masks):
-            plt.figure()
-            plt.imshow(self.valid_images[i])
-            coordList = get_coordinate_list(matrix = mask, size_image = 512, size_grid = 128)
-            plt.scatter(coordList[...,0], coordList[...,1], marker = "+", color = "r", s = 10)
-            ground_truth.append(wandb.Image(plt, caption=f"Ground truth: {i}"))
-
-        wandb.log({f"Ground truth": ground_truth}, commit=False)
-        
 
         predictions_valid = []
         for i, image in enumerate(self.valid_images):
@@ -57,7 +46,6 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
 
         wandb.log({f"Predictions valid dataset {i}": predictions_valid}, commit=False)
 
-
         predictions_train = []
         for i, image in enumerate(self.train_images):
             plt.figure()
@@ -69,8 +57,20 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
 
         wandb.log({f"Predictions train dataset {i}": predictions_train}, commit=False)
 
+        ground_truth = []
+        for i, mask in enumerate(self.train_masks):
+            plt.figure()
+            plt.imshow(self.train_images[i])
+            coordList = get_coordinate_list(matrix = mask, size_image = 512, size_grid = 128)
+            plt.scatter(coordList[...,0], coordList[...,1], marker = "+", color = "r", s = 10)
+            ground_truth.append(wandb.Image(plt, caption=f"Ground truth train: {i}"))
 
-        plt.close()
+        wandb.log({f"Ground truth": ground_truth}, commit=False)
+        
+
+
+
+        plt.close(fig="all")
 
       
         #ground_truth = [
