@@ -5,10 +5,12 @@ import tensorflow as tf
 import time
 import wandb
 from typing import Dict
+import matplotlib.pyplot as plt
 sys.path.append("../")
 
 from spot_detection.datasets.dataset import Dataset
 from spot_detection.models.base import Model
+from util_prediction import get_coordinate_list, get_relative_coordinates, get_absolute_coordinates
 
 
 def get_from_module(path: str, attribute: str) -> type:
@@ -16,6 +18,9 @@ def get_from_module(path: str, attribute: str) -> type:
     module = importlib.import_module(path)
     attribute = getattr(module, attribute)
     return attribute
+
+def plot_spots_on_image(ax, img: np.ndarray, true: np.ndarray):
+    """"Plot coordinates on image"""
 
 
 class WandbImageLogger(tf.keras.callbacks.Callback):
@@ -31,19 +36,44 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
         self.valid_masks = dataset.y_valid[:example_count]
 
     def on_epoch_end(self, epoch, logs=None):
-        ground_truth = [
-            wandb.Image(image,
-                        caption=f"Ground truth: {i}")
-            for i, image in enumerate(self.valid_masks)
-        ]
+        ground_truth = []
+        for i, image in enumerate(self.valid_masks):
+            plt.imshow(self.valid_images[i])
+            coordList = get_coordinate_list(matrix = image, size_image = 512, size_grid = 128)
+            plt.scatter(coordList[...,0], coordList[...,1])
+            plt.show()
+            ground_truth.append(
+                wandb.Image(plt,caption=f"Ground truth: {i}")
+            )
+        
         wandb.log({"Ground truth": ground_truth}, commit=False)
 
-        predictions = [
-            wandb.Image(self.model_wrapper.predict_on_image(image),
-                        caption=f"Prediction: {i}")
-            for i, image in enumerate(self.valid_images)
-        ]
+        predictions = []
+        for i, image in enumerate(self.valid_images):
+            plt.imshow(self.image[i])
+            pred =self.model_wrapper.predict_on_image(image)
+            coordList = get_coordinate_list(matrix = pred, size_image = 512, size_grid = 128)
+            plt.scatter(coordList[...,0], coordList[...,1])
+            plt.show()
+            predictions.append(
+                wandb.Image(plt,caption=f"Prediction: {i}")
+            )
+        
         wandb.log({"Predictions": predictions}, commit=False)
+
+        #ground_truth = [
+        #    wandb.Image(image,
+        #                caption=f"Ground truth: {i}")
+        #    for i, image in enumerate(self.valid_masks)
+        #]
+        #wandb.log({"Ground truth": ground_truth}, commit=False)
+
+        #predictions = [
+        #    wandb.Image(self.model_wrapper.predict_on_image(image),
+        #                caption=f"Prediction: {i}")
+        #    for i, image in enumerate(self.valid_images)
+        #]
+        #wandb.log({"Predictions": predictions}, commit=False)
 
 
 class DataShuffler(tf.keras.callbacks.Callback):
