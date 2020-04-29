@@ -6,11 +6,16 @@ import time
 import wandb
 from typing import Dict
 import matplotlib.pyplot as plt
+
 sys.path.append("../")
 
 from spot_detection.datasets.dataset import Dataset
 from spot_detection.models.base import Model
-from util_prediction import get_coordinate_list, get_relative_coordinates, get_absolute_coordinates
+from util_prediction import (
+    get_coordinate_list,
+    get_relative_coordinates,
+    get_absolute_coordinates,
+)
 
 
 def get_from_module(path: str, attribute: str) -> type:
@@ -33,17 +38,29 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
         self.train_images = dataset.x_train[:example_count]
         self.train_masks = dataset.y_train[:example_count]
 
-    def on_epoch_end(self, epoch, logs=None):
+    def on_train_begin(self, epochs, logs=None):  # pylint: disable=W0613
+        """Logs the ground truth at train_begin."""
+        ground_truth = []
+        for i, mask in enumerate(self.train_masks):
+            plt.figure()
+            plt.imshow(self.train_images[i])
+            coordList = get_coordinate_list(matrix=mask, size_image=512, size_grid=128)
+            plt.scatter(coordList[..., 0], coordList[..., 1], marker="+", color="r", s=10)
+            ground_truth.append(wandb.Image(plt, caption=f"Ground truth train: {i}"))
+        wandb.log({f"Ground truth": ground_truth}, commit=False)
 
+        plt.close(fig="all")
+
+    def on_epoch_end(self, epoch, logs=None):  # pylint: disable=W0613
+        """Logs predictions on epoch_end."""
         predictions_valid = []
         for i, image in enumerate(self.valid_images):
             plt.figure()
             plt.imshow(image)
             pred_mask = self.model_wrapper.predict_on_image(image)
-            coordList = get_coordinate_list(matrix = pred_mask, size_image = 512, size_grid = 128)
-            plt.scatter(coordList[...,0], coordList[...,1], marker = "+", color = "r", s = 10)
+            coordList = get_coordinate_list(matrix=pred_mask, size_image=512, size_grid=128)
+            plt.scatter(coordList[..., 0], coordList[..., 1], marker="+", color="r", s=10)
             predictions_valid.append(wandb.Image(plt, caption=f"Prediction: {i}"))
-
         wandb.log({f"Predictions valid dataset": predictions_valid}, commit=False)
 
         predictions_train = []
@@ -51,41 +68,26 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
             plt.figure()
             plt.imshow(image)
             pred_mask = self.model_wrapper.predict_on_image(image)
-            coordList = get_coordinate_list(matrix = pred_mask, size_image = 512, size_grid = 128)
-            plt.scatter(coordList[...,0], coordList[...,1], marker = "+", color = "r", s = 10)
+            coordList = get_coordinate_list(matrix=pred_mask, size_image=512, size_grid=128)
+            plt.scatter(coordList[..., 0], coordList[..., 1], marker="+", color="r", s=10)
             predictions_train.append(wandb.Image(plt, caption=f"Prediction: {i}"))
-
         wandb.log({f"Predictions train dataset": predictions_train}, commit=False)
-
-        ground_truth = []
-        for i, mask in enumerate(self.train_masks):
-            plt.figure()
-            plt.imshow(self.train_images[i])
-            coordList = get_coordinate_list(matrix = mask, size_image = 512, size_grid = 128)
-            plt.scatter(coordList[...,0], coordList[...,1], marker = "+", color = "r", s = 10)
-            ground_truth.append(wandb.Image(plt, caption=f"Ground truth train: {i}"))
-
-        wandb.log({f"Ground truth": ground_truth}, commit=False)
-        
-
-
 
         plt.close(fig="all")
 
-      
-        #ground_truth = [
+        # ground_truth = [
         #    wandb.Image(image,
         #                caption=f"Ground truth: {i}")
         #    for i, image in enumerate(self.valid_masks)
-        #]
-        #wandb.log({"Ground truth": ground_truth}, commit=False)
+        # ]
+        # wandb.log({"Ground truth": ground_truth}, commit=False)
 
-        #predictions = [
+        # predictions = [
         #    wandb.Image(self.model_wrapper.predict_on_image(image),
         #                caption=f"Prediction: {i}")
         #    for i, image in enumerate(self.valid_images)
-        #]
-        #wandb.log({"Predictions": predictions}, commit=False)
+        # ]
+        # wandb.log({"Predictions": predictions}, commit=False)
 
 
 class DataShuffler(tf.keras.callbacks.Callback):
@@ -112,12 +114,9 @@ def train_model(model: Model, dataset: Dataset) -> Model:
 
     wandb_callback = wandb.keras.WandbCallback()
     image_callback = WandbImageLogger(model, dataset)
-    saver_callback = tf.keras.callbacks.ModelCheckpoint(
-        f"../models/model_{int(time.time())}.h5", save_best_only=False,
-    )
+    saver_callback = tf.keras.callbacks.ModelCheckpoint(f"../models/model_{int(time.time())}.h5", save_best_only=False,)
     shuffle_callback = DataShuffler()
-    callbacks = [wandb_callback, image_callback,
-                 saver_callback, shuffle_callback]
+    callbacks = [wandb_callback, image_callback, saver_callback, shuffle_callback]
 
     tic = time.time()
     _ = model.fit(dataset=dataset, callbacks=callbacks)
@@ -151,8 +150,7 @@ def run_experiment(cfg: Dict, save_weights: bool = False):
     dataset_class_ = get_from_module("spot_detection.datasets", cfg["dataset"])
     model_class_ = get_from_module("spot_detection.models", cfg["model"])
     network_fn_ = get_from_module("spot_detection.networks", cfg["network"])
-    optimizer_fn_ = get_from_module(
-        "spot_detection.optimizers", cfg["optimizer"])
+    optimizer_fn_ = get_from_module("spot_detection.optimizers", cfg["optimizer"])
     loss_fn_ = get_from_module("spot_detection.losses", cfg["loss"])
 
     network_args = cfg.get("network_args", {})
