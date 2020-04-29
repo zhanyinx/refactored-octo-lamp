@@ -4,7 +4,7 @@ dataset: "SpotsDataset"
 dataset_args:
     version: "pia_spots_158f6bd5"
 model: "SpotsModel"
-network: "fcn"
+network: "fcn_dropout_bigger"
 network_args:
     n_channels: 3
 loss: "binary_crossentropy"
@@ -13,4 +13,3 @@ train_args:
     batch_size: 1
     epochs: 1000
     learning_rate: 3e-4
-    pretrained: "/work2/scratch/guacamole-models/model_1587921377.h5"

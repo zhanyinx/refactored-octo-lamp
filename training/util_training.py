@@ -44,7 +44,7 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
             plt.scatter(coordList[...,0], coordList[...,1], marker = "+", color = "r", s = 10)
             predictions_valid.append(wandb.Image(plt, caption=f"Prediction: {i}"))
 
-        wandb.log({f"Predictions valid dataset {i}": predictions_valid}, commit=False)
+        wandb.log({f"Predictions valid dataset": predictions_valid}, commit=False)
 
         predictions_train = []
         for i, image in enumerate(self.train_images):
@@ -55,7 +55,7 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
             plt.scatter(coordList[...,0], coordList[...,1], marker = "+", color = "r", s = 10)
             predictions_train.append(wandb.Image(plt, caption=f"Prediction: {i}"))
 
-        wandb.log({f"Predictions train dataset {i}": predictions_train}, commit=False)
+        wandb.log({f"Predictions train dataset": predictions_train}, commit=False)
 
         ground_truth = []
         for i, mask in enumerate(self.train_masks):

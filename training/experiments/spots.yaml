@@ -4,7 +4,7 @@ dataset: "SpotsDataset"
 dataset_args:
     version: "spots_synt4_af4f7386"
 model: "SpotsModel"
-network: "fcn"
+network: "fcn_dropout_bigger"
 network_args:
     n_channels: 3
 loss: "binary_crossentropy"
