@@ -2,7 +2,7 @@ name: "octo-lamp"
 comments: "Spot overfitting."
 dataset: "SpotsDataset"
 dataset_args:
-    version: "spots_synt4_af4f7386"
+    version: "spots_synt_harder_f32641ed"
 model: "SpotsModel"
 network: "fcn_dropout_bigger"
 network_args:

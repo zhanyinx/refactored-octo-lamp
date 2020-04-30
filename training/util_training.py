@@ -37,6 +37,7 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
         self.valid_images = dataset.x_valid[:example_count]
         self.train_images = dataset.x_train[:example_count]
         self.train_masks = dataset.y_train[:example_count]
+        self.valid_masks = dataset.y_valid[:example_count]
 
     def on_train_begin(self, epochs, logs=None):  # pylint: disable=W0613
         """Logs the ground truth at train_begin."""
@@ -47,7 +48,16 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
             coordList = get_coordinate_list(matrix=mask, size_image=512, size_grid=128)
             plt.scatter(coordList[..., 0], coordList[..., 1], marker="+", color="r", s=10)
             ground_truth.append(wandb.Image(plt, caption=f"Ground truth train: {i}"))
-        wandb.log({f"Ground truth": ground_truth}, commit=False)
+        wandb.log({f"Train ground truth": ground_truth}, commit=False)
+
+        ground_truth_valid = []
+        for i, mask in enumerate(self.valid_masks):
+            plt.figure()
+            plt.imshow(self.valid_images[i])
+            coordList = get_coordinate_list(matrix=mask, size_image=512, size_grid=128)
+            plt.scatter(coordList[..., 0], coordList[..., 1], marker="+", color="r", s=10)
+            ground_truth_valid.append(wandb.Image(plt, caption=f"Ground truth valid: {i}"))
+        wandb.log({f"Valid ground truth": ground_truth_valid}, commit=False)
 
         plt.close(fig="all")
 
