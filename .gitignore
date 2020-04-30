@@ -10,3 +10,4 @@ __pycache__/
 
 # Large files
 *.h5
+*.npz
