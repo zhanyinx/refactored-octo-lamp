@@ -1,7 +1,10 @@
-import numpy as np
-import tensorflow as tf
+"""SpotsModel class."""
 
 from typing import Callable, Dict, Tuple
+# import functools
+
+import numpy as np
+import tensorflow as tf
 
 from spot_detection.datasets.dataset_spots import SpotsDataset
 from spot_detection.datasets.dataset_sequence import DatasetSequence
@@ -11,6 +14,8 @@ from spot_detection.models.base import Model
 from spot_detection.models.util import random_cropping, next_power
 from spot_detection.networks.fcn import fcn, fcn_dropout, fcn_dropout_bigger
 from spot_detection.networks.resnet import resnet
+
+# from spot_detection.models.util_augment import augment_batch_baseline
 
 DEFAULT_TRAIN_ARGS = {
     "batch_size": 16,
@@ -37,6 +42,15 @@ class SpotsModel(Model):
         batch_format_fn: Callable = None,
         batch_augment_fn: Callable = None,
     ):
+        # self.batch_augment_fn = functools.partial(
+        #     augment_batch_baseline,
+        #     flip_=self.dataset_args["flip"],
+        #     illuminate_=self.dataset_args["illuminate"],
+        #     gaussian_noise_=self.dataset_args["gaussian_noise"],
+        #     rotate_=self.dataset_args["rotate"],
+        #     translate_=self.dataset_args["translate"],
+        #     cell_size=self.dataset_args["please also put this in the config"],
+        # )
         super().__init__(
             dataset_cls,
             network_fn,
