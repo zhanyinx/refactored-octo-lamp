@@ -4,12 +4,12 @@ dataset: "SpotsDataset"
 dataset_args:
     version: "pia_spots_158f6bd5"
 model: "SpotsModel"
-network: "fcn_dropout_bigger"
+network: "resnet"
 network_args:
     n_channels: 3
 loss: "binary_crossentropy"
 optimizer: "adam"
 train_args:
     batch_size: 1
-    epochs: 1000
-    learning_rate: 3e-4
+    epochs: 2000
+    learning_rate: 1e-4
