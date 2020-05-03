@@ -5,22 +5,17 @@ from typing import Iterable, List
 
 
 def extract_basename(path: dir) -> str:
-    """ Returns the basename removing path and extension. """
+    """Returns the basename removing path and extension."""
     return os.path.splitext(os.path.basename(path))[0]
 
 
 def get_prediction_matrix(spot_coord: np.ndarray, size: int, cell_size: int) -> np.ndarray:
-    """
-    Return np.ndarray of shape (n, n, 3):
-            p, x, y format for each cell.
-    
+    """Return np.ndarray of shape (n, n, 3): p, x, y format for each cell.
+
     Args:
-        - spot_coord (np.ndarray): List of coordinates in
-            x, y format with shape (n, 2).
-        - size (int): size of the image from which List
-            of coordinates are extracted
-        - cell_size (int): size of cell used to calculate
-            F1 score, precision and recall  
+        spot_coord: List of coordinates in x, y format with shape (n, 2).
+        size: size of the image from which List of coordinates are extracted.
+        cell_size: size of cell used to calculate F1 score, precision and recall.
     """
 
     if not all(isinstance(i, int) for i in (size, cell_size)):
@@ -44,18 +39,15 @@ def get_prediction_matrix(spot_coord: np.ndarray, size: int, cell_size: int) -> 
 def train_valid_split(
     x_list: List[dir], y_list: List[dir], valid_split: float = 0.2, shuffle: bool = True
 ) -> Iterable[List[dir]]:
-    """
-    Splits two lists (input and predictions) into random training and validation
-    sets with an optional shuffling.
+    """Split two lists (input and predictions).
+    Splitting into random training and validation sets with an optional shuffling.
 
     Args:
-        - x_list: List containing filenames of all input.
-        - y_list: List containing filenames of all predictions.
-        - valid_split: Number between 0-1 to denote
-            the percentage of examples used for validation.
+        x_list: List containing filenames of all input.
+        y_list: List containing filenames of all predictions.
+        valid_split: Number between 0-1 to denote the percentage of examples used for validation.
     Returns:
-        - x_train, x_valid, y_train, y_valid: Splited lists
-            containing training or validation examples respectively.
+        x_train, x_valid, y_train, y_valid: Splited lists containing training or validation examples respectively.
     """
     if not all(isinstance(i, list) for i in [x_list, y_list]):
         raise TypeError(
@@ -79,7 +71,7 @@ def train_valid_split(
         raise OSError(f"y_list paths must exist.")
 
     def __shuffle(x_list: list, y_list: list):
-        """ Shuffles two list keeping their relative arrangement. """
+        """Shuffles two list keeping their relative arrangement."""
         import random
 
         combined = list(zip(x_list, y_list))
