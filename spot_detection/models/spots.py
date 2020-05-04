@@ -1,6 +1,7 @@
 """SpotsModel class."""
 
 from typing import Callable, Dict, Tuple
+
 # import functools
 
 import numpy as np

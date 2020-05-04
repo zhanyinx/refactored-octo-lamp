@@ -2,7 +2,7 @@ import tensorflow as tf
 from .util import OPTIONS_CONV
 from .util import residual_block, conv_block
 
-dropout = 0.5
+dropout = 0.2
 def resnet(n_channels: int = 3) -> tf.keras.models.Model:
     """ Simplest FCN architecture without skips. """
 

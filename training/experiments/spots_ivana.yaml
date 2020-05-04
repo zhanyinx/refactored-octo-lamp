@@ -1,8 +1,8 @@
-name: "pia_spots"
+name: "Ivana_spots"
 comments: "Pia spots full dataset"
 dataset: "SpotsDataset"
 dataset_args:
-    version: "pia_spots_158f6bd5"
+    version: "spots_ivana_3c2764fe"
     cell_size: 4
 model: "SpotsModel"
 network: "resnet"
@@ -11,6 +11,6 @@ network_args:
 loss: "binary_crossentropy"
 optimizer: "adam"
 train_args:
-    batch_size: 1
+    batch_size: 16
     epochs: 2000
     learning_rate: 1e-4

@@ -45,18 +45,18 @@ def augment_batch_baseline(
 def flip(image: np.ndarray, mask: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Augment through horizontal/vertical flipping."""
     rand_flip = np.random.randint(low=0, high=2)
-    image = np.flip(image, rand_flip)
-    mask = np.flip(mask, rand_flip)
+    image = np.flip(image, rand_flip).copy()
+    new_mask = np.flip(mask, rand_flip).copy()
 
     # Horizontal flip / change along y axis
     if rand_flip == 0:
-        np.where(mask[..., 0], 1-mask[..., 0], mask[..., 0])
+        new_mask[..., 1] = np.where(new_mask[..., 0], 1 - new_mask[..., 1], new_mask[..., 1])
 
     # Vertical flip / change along x axis
     if rand_flip == 1:
-        np.where(mask[..., 1], 1-mask[..., 1], mask[..., 1])
+        new_mask[..., 2] = np.where(new_mask[..., 0], 1 - new_mask[..., 2], new_mask[..., 2])
 
-    return image, mask
+    return image, new_mask
 
 
 def illuminate(image: np.ndarray, mask: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -94,7 +94,9 @@ def rotate(image: np.ndarray, mask: np.ndarray) -> Tuple[np.ndarray, np.ndarray]
     return image, mask
 
 
-def translate(image: np.ndarray, mask: np.ndarray, roll: bool = True, cell_size: int = 4) -> Tuple[np.ndarray, np.ndarray]:
+def translate(
+    image: np.ndarray, mask: np.ndarray, roll: bool = True, cell_size: int = 4
+) -> Tuple[np.ndarray, np.ndarray]:
     """Augment through translation along all axes."""
     shift = np.random.choice([np.random.randint(1, 5) * cell_size])
     direction = np.random.choice(["right", "left", "down", "up"])

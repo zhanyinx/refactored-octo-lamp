@@ -3,6 +3,7 @@ comments: "Spot overfitting."
 dataset: "SpotsDataset"
 dataset_args:
     version: "spots_synt_harder_f32641ed"
+    cell_size: 4
 model: "SpotsModel"
 network: "fcn_dropout_bigger"
 network_args:
