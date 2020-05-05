@@ -42,7 +42,7 @@ def get_coordinate_list(matrix: np.ndarray, size_image: int = 512, size_grid: in
             coords_x.append(coord_abs[0])
             coords_y.append(coord_abs[1])
 
-    return np.array([coords_x, coords_y]).T
+    return np.array([coords_y, coords_x]).T
 
 
 def get_relative_coordinates(

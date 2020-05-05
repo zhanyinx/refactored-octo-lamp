@@ -67,7 +67,7 @@ def group_to_numpy(
         return 0, 0
 
     df.columns = ["x", "y"]
-    xy = np.stack([df["x"].to_numpy(), df["y"].to_numpy()]).T
+    xy = np.stack([df["y"].to_numpy(), df["x"].to_numpy()]).T
     xy = xy * conversion
     xy = get_prediction_matrix(xy, len(image), cell_size)
 

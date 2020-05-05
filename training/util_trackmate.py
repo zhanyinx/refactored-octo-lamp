@@ -98,8 +98,8 @@ def trackmate_group_to_numpy(
     if len(df) < 5:
         return 0, 0, 0
 
-    df.columns = ["x", "y"]
-    df_trackmate.columns = ["number", "x", "y"]
+    df.columns = ["y", "x"]
+    df_trackmate.columns = ["number", "y", "x"]
 
     xy = np.stack([df["x"].to_numpy(), df["y"].to_numpy()]).T
     xy_trackmate = np.stack(

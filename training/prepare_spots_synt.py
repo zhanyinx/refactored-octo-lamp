@@ -77,7 +77,7 @@ def import_data(
         df = pd.read_csv(y)
         for _, row in df.iterrows():
             labels.append(
-                [row["t [sec]"] + n_images, row["x [pixel]"], row["y [pixel]"]]
+                [row["t [sec]"] + n_images, row["y [pixel]"], row["x [pixel]"]]
             )
         n_images += min(image.shape)
 
