@@ -4,6 +4,11 @@ dataset: "SpotsDataset"
 dataset_args:
     version: "spots_synt_harder_e4cd83b6"
     cell_size: 4
+    flip: False
+    illuminate: False
+    rotate: False
+    gaussian_noise: False
+    translate: False
 model: "SpotsModel"
 network: "resnet"
 network_args:
