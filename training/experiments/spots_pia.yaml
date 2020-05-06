@@ -11,6 +11,6 @@ network_args:
 loss: "binary_crossentropy"
 optimizer: "adam"
 train_args:
-    batch_size: 4
-    epochs: 200
-    learning_rate: 1e-4
+    batch_size: 1
+    epochs: 2000
+    learning_rate: 3e-5

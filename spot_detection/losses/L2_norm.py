@@ -8,9 +8,7 @@ def l2_norm(y_true, y_pred):
     Calculate L2 norm between true and predicted coordinates 
     """
     if not K.ndim(y_true) == K.ndim(y_pred):
-        raise ValueError(
-            f"true/pred shapes must match: {y_true.shape} != {y_pred.shape}"
-        )
+        raise ValueError(f"true/pred shapes must match: {y_true.shape} != {y_pred.shape}")
 
     coord_true = y_true[..., 1:]
     coord_pred = y_pred[..., 1:]
