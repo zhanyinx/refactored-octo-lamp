@@ -1,11 +1,13 @@
-import importlib
-import numpy as np
-import os
-from typing import Iterable, List
+"""Dataset preparation functions."""
+
 import argparse
-from typing import Tuple
 import glob
 import math
+import os
+import random
+from typing import Iterable, List, Tuple
+
+import numpy as np
 
 
 def get_file_lists(path: str, format_image: str, format_label: str) -> Tuple[List[str], List[str]]:
@@ -47,7 +49,7 @@ def get_file_lists(path: str, format_image: str, format_label: str) -> Tuple[Lis
 
 def remove_zeros(lst: list) -> list:
     """ Removes all occurences of "0" from a list. """
-    return [i for i in lst if i is not 0]
+    return [i for i in lst if isinstance(i, np.ndarray)]
 
 
 def _parse_args():
@@ -112,11 +114,11 @@ def get_prediction_matrix(spot_coord: np.ndarray, size: int, cell_size: int, siz
         ncol = math.ceil(size_y / cell_size)
 
     pred = np.zeros((nrow, ncol, 3))
-    for s in range(len(spot_coord)):
-        i = int(np.floor(spot_coord[s, 0])) // cell_size
-        j = int(np.floor(spot_coord[s, 1])) // cell_size
-        rel_x = (spot_coord[s, 0] - i * cell_size) / cell_size
-        rel_y = (spot_coord[s, 1] - j * cell_size) / cell_size
+    for nspot in range(len(spot_coord)):
+        i = int(np.floor(spot_coord[nspot, 0])) // cell_size
+        j = int(np.floor(spot_coord[nspot, 1])) // cell_size
+        rel_x = (spot_coord[nspot, 0] - i * cell_size) / cell_size
+        rel_y = (spot_coord[nspot, 1] - j * cell_size) / cell_size
         pred[i, j, 0] = 1
         pred[i, j, 1] = rel_x
         pred[i, j, 2] = rel_y
@@ -156,7 +158,6 @@ def train_valid_split(
 
     def __shuffle(x_list: list, y_list: list):
         """Shuffles two list keeping their relative arrangement."""
-        import random
 
         combined = list(zip(x_list, y_list))
         random.shuffle(combined)

@@ -1,11 +1,10 @@
 """Model class, to be extended by specific types of models."""
 
-from typing import Callable, Dict, Optional
-
-import numpy as np
-import tensorflow as tf
 import pathlib
 import datetime
+from typing import Callable, Dict
+
+import numpy as np
 
 from spot_detection.datasets.dataset import Dataset
 from spot_detection.datasets.dataset_sequence import DatasetSequence
@@ -34,9 +33,7 @@ class Model:
         self.loss_fn = loss_fn
         self.optimizer_fn = optimizer_fn
 
-        self.network = network_fn(
-            n_channels=network_args["n_channels"]
-        )  # **network_args
+        self.network = network_fn(n_channels=network_args["n_channels"])  # **network_args
         self.dataset_args = dataset_args
         self.train_args = train_args
         self.batch_format_fn = batch_format_fn
@@ -56,16 +53,13 @@ class Model:
     def metrics(self) -> list:
         return ["accuracy"]
 
-    def fit(
-        self, dataset: Dataset, augment_val: bool = True, callbacks: list = None,
-    ) -> None:
+    def fit(self, dataset: Dataset, augment_val: bool = True, callbacks: list = None,) -> None:
         if callbacks is None:
             callbacks = []
 
         self.network.compile(
             loss=self.loss_fn,
-            optimizer=self.optimizer_fn(
-                float(self.train_args["learning_rate"])),
+            optimizer=self.optimizer_fn(float(self.train_args["learning_rate"])),
             metrics=self.metrics,
         )
 
@@ -96,8 +90,7 @@ class Model:
 
     def evaluate(self, x: np.ndarray, y: np.ndarray) -> float:
         """Evaluate model."""
-        sequence = DatasetSequence(
-            x, y, batch_size=self.train_args["batch_size"])
+        sequence = DatasetSequence(x, y, batch_size=self.train_args["batch_size"])
         preds = self.network.predict(sequence)
         return np.mean(np.square(preds) - np.square(y))
 

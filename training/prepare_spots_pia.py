@@ -1,20 +1,19 @@
-""" Prepares a dataset from an images/ labels/ folder structure. """
+""" Prepares a dataset from an images/ labels/ folder structure."""
 
-import numpy as np
-import os
-import pandas as pd
 import secrets
-import skimage.io
 import sys
 from typing import List, Iterable
+
+import skimage.io
+import pandas as pd
+import numpy as np
 
 sys.path.append("../")
 from training.util_prepare import train_valid_split, get_prediction_matrix, _parse_args, get_file_lists, remove_zeros
 
 
 def group_to_numpy(img: str, label: str, conversion: float, cell_size: int, bitdepth: int) -> Iterable[np.ndarray]:
-    """ Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays. 
-    """
+    """ Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays."""
 
     image = skimage.io.imread(img)
     image /= 2 ** bitdepth - 1  # normalise

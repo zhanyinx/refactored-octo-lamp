@@ -16,7 +16,7 @@ def conv_block(
     for _ in range(n_convs):
         x = tf.keras.layers.Conv2D(filters, **OPTIONS_CONV)(x)
         x = tf.keras.layers.Activation("relu")(x)
-        if dropout is not 0:
+        if dropout > 0:
             x = tf.keras.layers.Dropout(dropout)(x)
     return x
 

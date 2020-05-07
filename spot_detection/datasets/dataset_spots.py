@@ -1,5 +1,8 @@
-import numpy as np
+"""StandardDataset class."""
+
 import os
+
+import numpy as np
 
 from .dataset import Dataset
 

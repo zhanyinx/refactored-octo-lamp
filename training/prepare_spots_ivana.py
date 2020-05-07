@@ -1,15 +1,14 @@
-""" Prepares a dataset from an images/ labels/ folder structure. """
+"""Prepares a dataset from an images/ labels/ folder structure."""
 
-import numpy as np
-import os
-import pandas as pd
 import secrets
-import skimage.io
 import sys
-
-sys.path.append("../")
 from typing import List, Iterable
 
+import numpy as np
+import pandas as pd
+import skimage.io
+
+sys.path.append("../")
 from training.util_prepare import (
     train_valid_split,
     get_prediction_matrix,
@@ -20,7 +19,7 @@ from training.util_prepare import (
 
 
 def group_to_numpy(img: str, label: str, cell_size: int) -> Iterable[np.ndarray]:
-    """ Reads files groups, sorts them and returns numpy arrays. """
+    """Reads files groups, sorts them and returns numpy arrays."""
 
     image = skimage.io.imread(img)
     # image /= np.max(image) #normalisation
@@ -76,16 +75,16 @@ def random_cropping(image: np.ndarray, mask: np.ndarray, cell_size: int, crop_si
 
 
 def files_to_numpy(images: List[str], labels: List[str], cell_size: int, crop_size: int) -> Iterable[np.ndarray]:
-    """ Converts file lists into numpy arrays. """
+    """Converts file lists into numpy arrays."""
     np_images = []
     np_labels = []
 
     for img, label_ in zip(images, labels):
         image, label = group_to_numpy(img, label_, cell_size)
 
-        if image is not 0 and any(i > crop_size for i in image.shape):
+        if isinstance(image, np.ndarray) and any(i > crop_size for i in image.shape):
             image, label = random_cropping(image, label, cell_size, crop_size)
-
+    
         np_images.append(image)
         np_labels.append(label)
 
@@ -96,7 +95,7 @@ def files_to_numpy(images: List[str], labels: List[str], cell_size: int, crop_si
 
 
 def main():
-    """ Parse command-line argument and prepare dataset. """
+    """Parse command-line argument and prepare dataset."""
     args = _parse_args()
 
     x_list, y_list = get_file_lists(args.path, format_image=args.image_format, format_label=args.label_format)

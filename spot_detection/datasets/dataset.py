@@ -1,3 +1,5 @@
+"""Baseline Dataset class."""
+
 import pathlib
 
 

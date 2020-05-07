@@ -3,13 +3,13 @@ Prepares a dataset from an folder containing .tif images and .csv labels structu
 As usually generated synthetically in Fiji.
 """
 
-from typing import List, Tuple, Iterable
-import numpy as np
-import os
-import pandas as pd
 import secrets
-import skimage.io
 import sys
+from typing import List, Tuple, Iterable
+
+import numpy as np
+import pandas as pd
+import skimage.io
 
 
 sys.path.append("../")
@@ -17,13 +17,12 @@ from training.util_prepare import (
     train_valid_split,
     get_prediction_matrix,
     get_file_lists,
-    remove_zeros,
     _parse_args,
 )
 
 
 def import_data(x_list: List[str], y_list: List[str]) -> Tuple[np.ndarray, pd.DataFrame]:
-    """ Opens files from lists as images and DataFrames. """
+    """Opens files from lists as images and DataFrames."""
 
     images, labels = [], []
     n_images = 0
@@ -47,7 +46,7 @@ def import_data(x_list: List[str], y_list: List[str]) -> Tuple[np.ndarray, pd.Da
 
 
 def files_to_numpy(images_: List[str], labels_: List[str], cell_size: int = 4) -> Iterable[np.ndarray]:
-    """ Converts file lists into numpy arrays. """
+    """Converts file lists into numpy arrays."""
     np_images, labels = import_data(images_, labels_)
 
     np_labels = []
@@ -63,7 +62,7 @@ def files_to_numpy(images_: List[str], labels_: List[str], cell_size: int = 4) -
 
 
 def main():
-    """ Parse command-line argument and prepare dataset. """
+    """Parse command-line argument and prepare dataset."""
     args = _parse_args()
 
     x_list, y_list = get_file_lists(path=args.path, format_image=args.image_format, format_label=args.label_format)

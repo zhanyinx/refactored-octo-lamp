@@ -1,3 +1,5 @@
+"""Model utility functions."""
+
 import numpy as np
 
 

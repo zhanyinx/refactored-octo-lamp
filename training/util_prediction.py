@@ -1,9 +1,10 @@
-# List of functions to convert prediction to x,y format for plotting
+"""List of functions to convert prediction to x,y format for plotting."""
+
+import itertools
+import operator
+from typing import Tuple
 
 import numpy as np
-import itertools
-from typing import Tuple
-import operator
 
 
 def get_coordinate_list(matrix: np.ndarray, size_image: int = 512, size_grid: int = 64) -> np.ndarray:

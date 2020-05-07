@@ -1,4 +1,5 @@
 """Model utility functions for augmentation."""
+
 from typing import Tuple
 
 import numpy as np
@@ -101,12 +102,13 @@ def rotate(image: np.ndarray, mask: np.ndarray) -> Tuple[np.ndarray, np.ndarray]
         y_coord = mask[..., 2].copy()
         mask[..., 1] = 1 - y_coord  # rotation coordinates +90 degrees + translation
         mask[..., 2] = x_coord  # rotation coordinates +90 degrees
+        mask[..., 1][mask[..., 0] == 0] = 0
+        mask[..., 2][mask[..., 0] == 0] = 0
+
     return image, mask
 
 
-def translate(
-    image: np.ndarray, mask: np.ndarray, roll: bool = True, cell_size: int = 4
-) -> Tuple[np.ndarray, np.ndarray]:
+def translate(image: np.ndarray, mask: np.ndarray, cell_size: int = 4) -> Tuple[np.ndarray, np.ndarray]:
     """Augment through translation along all axes."""
     direction = np.random.choice([0, 1])
     image = image.copy()

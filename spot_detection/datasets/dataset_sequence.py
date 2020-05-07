@@ -1,7 +1,9 @@
-import numpy as np
-import tensorflow as tf
+"""DatasetSequence class."""
 
 from typing import Callable, Tuple
+
+import numpy as np
+import tensorflow as tf
 
 
 def _shuffle(x, y):
@@ -11,6 +13,15 @@ def _shuffle(x, y):
 
 
 class DatasetSequence(tf.keras.utils.Sequence):
+    """Custom Sequence class used to feed data into model.fit.
+    Args:
+        x_list: List of inputs.
+        y_list: List of targets.
+        batch_size: Size of one mini-batch.
+        augment_fn: Function to augment one mini-batch of x and y.
+        format_fn: Function to format raw data to model input.
+    """
+
     def __init__(
         self,
         x: np.ndarray,
@@ -26,7 +37,7 @@ class DatasetSequence(tf.keras.utils.Sequence):
         self.format_fn = format_fn
 
     def __len__(self) -> int:
-        """ Returns length of the dataset in unit of batch size"""
+        """Returns length of the dataset in unit of batch size."""
 
         if len(self.x) <= self.batch_size:
             print("Warning! barch size larger than dataset, setting batch size to length of dataset")
@@ -35,7 +46,7 @@ class DatasetSequence(tf.keras.utils.Sequence):
         return int(np.floor(len(self.x) / self.batch_size))
 
     def __getitem__(self, idx) -> Tuple[np.ndarray, np.ndarray]:
-        """ Return a single batch. """
+        """Return a single batch."""
         #        idx = 0  # Overfit to just one batch
         begin = idx * self.batch_size
         end = (idx + 1) * self.batch_size
@@ -57,6 +68,6 @@ class DatasetSequence(tf.keras.utils.Sequence):
         return batch_x, batch_y
 
     def on_epoch_end(self) -> None:
-        """ Shuffle data. """
+        """Shuffle data."""
         # print("Running shuffling.")
         self.x, self.y = _shuffle(self.x, self.y)

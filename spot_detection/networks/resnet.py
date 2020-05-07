@@ -1,5 +1,6 @@
+"""Residual network"""
+
 import tensorflow as tf
-from .util import OPTIONS_CONV
 from .util import residual_block, conv_block
 
 DROPOUT = 0.2

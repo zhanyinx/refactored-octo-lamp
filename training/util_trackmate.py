@@ -1,16 +1,16 @@
-""" Utils necessary to load data from labels/ trackmate/ folder structure."""
+"""Utils necessary to load data from labels/ trackmate/ folder structure."""
 
 import glob
-import numpy as np
-import os
-import pandas as pd
-import sys
-import skimage.io
 import math
+import os
+import sys
+from typing import List, Iterable
+
+import numpy as np
+import pandas as pd
+import skimage.io
 
 sys.path.append("../")
-from typing import List, Tuple, Iterable
-
 from training.util_prepare import extract_basename
 
 
@@ -64,11 +64,11 @@ def trackmate_get_file_lists(path: str) -> Iterable[List[str]]:
 def trackmate_create_spot_mask(spot_coord: np.ndarray, size: int, cell_size: int) -> np.ndarray:
     """Create mask image with spot"""
     pred = np.zeros((math.ceil(size / cell_size), math.ceil(size / cell_size), 3))
-    for s in range(len(spot_coord)):
-        i = int(np.floor(spot_coord[s, 0])) // cell_size
-        j = int(np.floor(spot_coord[s, 1])) // cell_size
-        rel_x = (spot_coord[s, 0] - i * cell_size) / cell_size
-        rel_y = (spot_coord[s, 1] - j * cell_size) / cell_size
+    for nspot in range(len(spot_coord)):
+        i = int(np.floor(spot_coord[nspot, 0])) // cell_size
+        j = int(np.floor(spot_coord[nspot, 1])) // cell_size
+        rel_x = (spot_coord[nspot, 0] - i * cell_size) / cell_size
+        rel_y = (spot_coord[nspot, 1] - j * cell_size) / cell_size
         pred[i, j, 0] = 1
         pred[i, j, 1] = rel_x
         pred[i, j, 2] = rel_y
@@ -79,15 +79,14 @@ def trackmate_create_spot_mask(spot_coord: np.ndarray, size: int, cell_size: int
 def trackmate_group_to_numpy(
     image: str, label: str, trackmate: str, conversion: float, size: int, cell_size: int
 ) -> Iterable[np.ndarray]:
-    """ Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays. 
-    """
+    """ Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays."""
 
     image = skimage.io.imread(image)
     df = pd.read_table(label)
     df_trackmate = pd.read_csv(trackmate)
 
     if len(df) < 5:
-        return 0, 0, 0 # type: ignore[return-value]
+        return 0, 0, 0  # type: ignore[return-value]
 
     df.columns = ["y", "x"]
     df_trackmate.columns = ["number", "y", "x"]
@@ -105,14 +104,14 @@ def trackmate_group_to_numpy(
 
 
 def trackmate_remove_zeros(lst: list) -> list:
-    """ Removes all occurences of "0" from a list. """
-    return [i for i in lst if i is not 0]
+    """Removes all occurences of "0" from a list."""
+    return [i for i in lst if isinstance(i, np.ndarray)]
 
 
 def trackmate_files_to_numpy(
     images: List[str], labels: List[str], trackmates: List[str], conversion: float, size: int, cell_size: int,
 ) -> Iterable[np.ndarray]:
-    """ Converts file lists into numpy arrays. """
+    """ Converts file lists into numpy arrays."""
     np_images = []
     np_labels = []
     np_trackmate = []

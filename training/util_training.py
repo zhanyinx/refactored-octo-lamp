@@ -1,11 +1,14 @@
+"""Training functions."""
+
 import importlib
 import platform
 import sys
-import tensorflow as tf
 import time
-import wandb
 from typing import Dict, Callable
+
 import matplotlib.pyplot as plt
+import tensorflow as tf
+import wandb
 
 sys.path.append("../")
 
