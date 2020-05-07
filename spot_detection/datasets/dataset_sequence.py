@@ -7,13 +7,14 @@ import tensorflow as tf
 
 
 def _shuffle(x, y):
-    """ Shuffle x and y maintaining their association. """
+    """Shuffle x and y maintaining their association."""
     shuffled_indices = np.random.permutation(x.shape[0])
     return x[shuffled_indices], y[shuffled_indices]
 
 
 class DatasetSequence(tf.keras.utils.Sequence):
     """Custom Sequence class used to feed data into model.fit.
+
     Args:
         x_list: List of inputs.
         y_list: List of targets.
@@ -38,7 +39,6 @@ class DatasetSequence(tf.keras.utils.Sequence):
 
     def __len__(self) -> int:
         """Returns length of the dataset in unit of batch size."""
-
         if len(self.x) <= self.batch_size:
             print("Warning! barch size larger than dataset, setting batch size to length of dataset")
             self.batch_size = len(self.x)

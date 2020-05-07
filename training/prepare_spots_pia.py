@@ -1,4 +1,4 @@
-""" Prepares a dataset from an images/ labels/ folder structure."""
+"""Prepares a dataset from an images/ labels/ folder structure."""
 
 import secrets
 import sys
@@ -13,8 +13,7 @@ from training.util_prepare import train_valid_split, get_prediction_matrix, _par
 
 
 def group_to_numpy(img: str, label: str, conversion: float, cell_size: int, bitdepth: int) -> Iterable[np.ndarray]:
-    """ Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays."""
-
+    """Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays."""
     image = skimage.io.imread(img)
     image /= 2 ** bitdepth - 1  # normalise
 
@@ -33,7 +32,7 @@ def group_to_numpy(img: str, label: str, conversion: float, cell_size: int, bitd
 def files_to_numpy(
     images: List[str], labels: List[str], conversion: float, cell_size: int, bitdepth: int,
 ) -> Iterable[np.ndarray]:
-    """ Converts file lists into numpy arrays. """
+    """Converts file lists into numpy arrays."""
     np_images = []
     np_labels = []
 
@@ -49,7 +48,7 @@ def files_to_numpy(
 
 
 def main():
-    """ Parse command-line argument and prepare dataset. """
+    """Parse command-line argument and prepare dataset."""
     args = _parse_args()
 
     x_list, y_list = get_file_lists(args.path, format_image=args.image_format, format_label=args.label_format)

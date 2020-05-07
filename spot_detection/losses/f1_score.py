@@ -1,9 +1,10 @@
-"""F1 score metrics and loss function"""
+"""F1 score metrics and loss function."""
 
 import tensorflow.keras.backend as K
 
 
 def recall_score(y_true, y_pred):
+    """Recall score metrics."""
     y_true = y_true[..., 0]
     y_pred = y_pred[..., 0]
     true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
@@ -13,6 +14,7 @@ def recall_score(y_true, y_pred):
 
 
 def precision_score(y_true, y_pred):
+    """Precision score metrics."""
     y_true = y_true[..., 0]
     y_pred = y_pred[..., 0]
     true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
@@ -22,9 +24,7 @@ def precision_score(y_true, y_pred):
 
 
 def f1_score(y_true, y_pred):
-    """
-    F1 = 2 * (precision*recall) / (precision+recall)
-    """
+    """F1 = 2 * (precision*recall) / (precision+recall)."""
     if not K.ndim(y_true) == K.ndim(y_pred):
         raise ValueError(f"true/pred shapes must match: {y_true.shape} != {y_pred.shape}")
 
@@ -34,4 +34,5 @@ def f1_score(y_true, y_pred):
 
 
 def f1_score_loss(y_true, y_pred):
+    """F1 score loss."""
     return 1 - f1_score(y_true, y_pred)

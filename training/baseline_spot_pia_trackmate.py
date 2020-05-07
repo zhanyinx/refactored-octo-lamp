@@ -1,5 +1,5 @@
-"""
-Computes the baseline value metrics of spot detection given trackmate labels.
+"""Computes the baseline value metrics of spot detection given trackmate labels.
+
 Returns a csv file with all metrics.
 Here different metrics are used: f1_score, error on xy, and combination of f1_score and error on xy
 """
@@ -17,17 +17,19 @@ import training.util_trackmate
 
 
 def load_trackmate_data(path: str, size: int, cell_size: int, conversion: float = 1) -> Iterable[np.ndarray]:
-    """
-    Returns two lists of np.ndarray of shape (n,n,3):
-    containing p,x,y. One for trackmate labeled, one for human labeled
+    """Returns three lists of np.ndarray of shape (n,n,3): containing p,x,y.
 
     Args:
         - path (str): path to directory containing trackmate and labels subdirectories.
-        - size (int): size of the images labeled by trackmate or human
-        - cell_size (int): size of cell used to calculate F1 score, precision and recall
-        - conversion (float): scaling factor used to convert coordinates into pixel unit (default = 1, no conversion)
+        - size (int): size of the images labeled by trackmate or human.
+        - cell_size (int): size of cell used to calculate F1 score, precision and recall.
+        - conversion (float): scaling factor used to convert coordinates into pixel unit (default = 1, no conversion).
+        
+    Returns:
+        - images (np.ndarray): a numpy array of images.
+        - label_true (np.ndarray): true mask (label or prediction)
+        - label_trackmate (np.ndarray): trackmate prediction
     """
-
     if not all(isinstance(i, int) for i in (size, cell_size)):
         raise TypeError(f"size and cell_size must be int, but are {type(size), type(cell_size)}.")
 
@@ -39,7 +41,7 @@ def load_trackmate_data(path: str, size: int, cell_size: int, conversion: float 
 
 
 def _parse_args():
-    """ Argument parser. """
+    """Argument parser."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-t",
@@ -70,6 +72,7 @@ def _parse_args():
 
 
 def main():
+    """Computes baseline for spots from trackmate."""
     args = _parse_args()
 
     size = args.size

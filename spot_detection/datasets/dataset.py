@@ -4,7 +4,7 @@ import pathlib
 
 
 class Dataset:
-    """ Simple abstract class for datasets. """
+    """Simple abstract class for datasets."""
 
     def __init__(self, name: str = None):
         self.name = name
@@ -15,7 +15,8 @@ class Dataset:
 
     @classmethod
     def data_dirname(cls):
+        """Return the absolute path to data files."""
         return pathlib.Path(__file__).resolve().parents[2] / "data"
 
-    def load_or_generate_data(self):
-        pass
+    def load_data(self):
+        """Empty method to import or create data."""

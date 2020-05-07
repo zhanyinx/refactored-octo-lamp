@@ -20,7 +20,6 @@ from training.util_prepare import (
 
 def group_to_numpy(img: str, label: str, cell_size: int) -> Iterable[np.ndarray]:
     """Reads files groups, sorts them and returns numpy arrays."""
-
     image = skimage.io.imread(img)
     # image /= np.max(image) #normalisation
 
@@ -36,16 +35,17 @@ def group_to_numpy(img: str, label: str, cell_size: int) -> Iterable[np.ndarray]
 
 
 def random_cropping(image: np.ndarray, mask: np.ndarray, cell_size: int, crop_size: int = 256) -> np.ndarray:
-    """
-    Randomly crops an image and mask to size crop_size.
+    """Randomly crops an image and mask to size crop_size.
+
     Args:
         - image: Image to be cropped.
         - mask: Mask to be cropped.
         - cell_size: size of cell used to calculate F1 score
         - crop_size: Size to crop image and mask (both dimensions).
+        
     Returns:
         - crop_image, crop_mask: Cropped image and mask
-            respectively with shape (crop_size, crop_size).
+          respectively with shape (crop_size, crop_size).
     """
     if not all(isinstance(i, np.ndarray) for i in [image, mask]):
         raise TypeError(f"image, mask must be np.ndarray but is {type(image), type(mask)}.")
@@ -84,7 +84,7 @@ def files_to_numpy(images: List[str], labels: List[str], cell_size: int, crop_si
 
         if isinstance(image, np.ndarray) and any(i > crop_size for i in image.shape):
             image, label = random_cropping(image, label, cell_size, crop_size)
-    
+
         np_images.append(image)
         np_labels.append(label)
 

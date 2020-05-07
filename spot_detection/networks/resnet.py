@@ -1,4 +1,4 @@
-"""Residual network"""
+"""Residual network."""
 
 import tensorflow as tf
 from .util import residual_block, conv_block
@@ -7,8 +7,7 @@ DROPOUT = 0.2
 
 
 def resnet(n_channels: int = 3) -> tf.keras.models.Model:
-    """ Simplest FCN architecture without skips. """
-
+    """Simplest FCN architecture without skips."""
     i = 6  # 64
 
     inputs = tf.keras.layers.Input(shape=(512, 512, 1))

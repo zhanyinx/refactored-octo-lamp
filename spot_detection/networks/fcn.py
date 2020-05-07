@@ -1,4 +1,4 @@
-"""Fully convolutional networks with and without dropout"""
+"""Fully convolutional networks with and without dropout."""
 
 import tensorflow as tf
 
@@ -6,8 +6,7 @@ from .util import OPTIONS_CONV
 
 
 def fcn(n_channels: int = 3) -> tf.keras.models.Model:
-    """ Simplest FCN architecture without skips. """
-
+    """Simplest FCN architecture without skips and dropout."""
     i = 5  # 32
 
     inputs = tf.keras.layers.Input(shape=(512, 512, 1))
@@ -38,8 +37,7 @@ def fcn(n_channels: int = 3) -> tf.keras.models.Model:
 
 
 def fcn_dropout(n_channels: int = 3) -> tf.keras.models.Model:
-    """ Simplest FCN architecture without skips. """
-
+    """Simplest FCN architecture without skips."""
     i = 6  # 64
 
     inputs = tf.keras.layers.Input(shape=(512, 512, 1))

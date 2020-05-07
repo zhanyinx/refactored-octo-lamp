@@ -14,8 +14,7 @@ DATESTRING = datetime.datetime.now().strftime("%Y%d%m_%H%M")
 
 
 class Model:
-    """ Base class, to be subclassed by predictors for specific type of data. """
-
+    """Base class, to be subclassed by predictors for specific type of data."""
     def __init__(
         self,
         dataset_args: Dict,
@@ -46,14 +45,17 @@ class Model:
 
     @property
     def weights_filename(self) -> str:
+        """Return the absolute path to weight file."""
         DIRNAME.mkdir(parents=True, exist_ok=True)
         return str(DIRNAME / f"{self.name}_weights.h5")
 
     @property
     def metrics(self) -> list:
+        """Return metrics."""
         return ["accuracy"]
 
     def fit(self, dataset: Dataset, augment_val: bool = True, callbacks: list = None,) -> None:
+        """Training loop."""
         if callbacks is None:
             callbacks = []
 
@@ -95,7 +97,9 @@ class Model:
         return np.mean(np.square(preds) - np.square(y))
 
     def load_weights(self) -> None:
+        """Load model weights."""
         self.network.load_weights(self.train_args["pretrained"])
 
     def save_weights(self) -> None:
+        """Save model weights."""
         self.network.save_weights(self.weights_filename)

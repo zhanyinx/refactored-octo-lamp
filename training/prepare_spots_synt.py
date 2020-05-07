@@ -1,7 +1,4 @@
-"""
-Prepares a dataset from an folder containing .tif images and .csv labels structure.
-As usually generated synthetically in Fiji.
-"""
+"""Prepares a dataset from an folder containing images and labels subfolders."""
 
 import secrets
 import sys
@@ -23,7 +20,6 @@ from training.util_prepare import (
 
 def import_data(x_list: List[str], y_list: List[str]) -> Tuple[np.ndarray, pd.DataFrame]:
     """Opens files from lists as images and DataFrames."""
-
     images, labels = [], []
     n_images = 0
     for x, y in zip(x_list, y_list):

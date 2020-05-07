@@ -15,13 +15,12 @@ from training.util_prepare import extract_basename
 
 
 def trackmate_get_file_lists(path: str) -> Iterable[List[str]]:
-    """
-    Extracts file paths and checks if respective files are present.
+    """Extracts file paths and checks if respective files are present.
 
     Args:
         - Path: Relative or absolute location of directory containing
             images and labels subdirectories.
-
+            
     Returns:
         - x_list, y_list, t_list: Lists of absolute file paths for the files found
             in the images, labels and trackmate subdirectories.
@@ -62,7 +61,7 @@ def trackmate_get_file_lists(path: str) -> Iterable[List[str]]:
 
 
 def trackmate_create_spot_mask(spot_coord: np.ndarray, size: int, cell_size: int) -> np.ndarray:
-    """Create mask image with spot"""
+    """Create mask image with spot."""
     pred = np.zeros((math.ceil(size / cell_size), math.ceil(size / cell_size), 3))
     for nspot in range(len(spot_coord)):
         i = int(np.floor(spot_coord[nspot, 0])) // cell_size
@@ -79,8 +78,7 @@ def trackmate_create_spot_mask(spot_coord: np.ndarray, size: int, cell_size: int
 def trackmate_group_to_numpy(
     image: str, label: str, trackmate: str, conversion: float, size: int, cell_size: int
 ) -> Iterable[np.ndarray]:
-    """ Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays."""
-
+    """Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays."""
     image = skimage.io.imread(image)
     df = pd.read_table(label)
     df_trackmate = pd.read_csv(trackmate)
@@ -111,7 +109,7 @@ def trackmate_remove_zeros(lst: list) -> list:
 def trackmate_files_to_numpy(
     images: List[str], labels: List[str], trackmates: List[str], conversion: float, size: int, cell_size: int,
 ) -> Iterable[np.ndarray]:
-    """ Converts file lists into numpy arrays."""
+    """Converts file lists into numpy arrays."""
     np_images = []
     np_labels = []
     np_trackmate = []

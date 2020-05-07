@@ -20,18 +20,17 @@ DEFAULT_CELL_SIZE = 4
 
 
 def get_from_module(path: str, attribute: str) -> Callable:
-    """ Grabs an attribute from a given module path. """
+    """Grabs an attribute from a given module path."""
     module = importlib.import_module(path)
     attribute = getattr(module, attribute)
     return attribute  # type: ignore[return-value]
 
 
 class WandbImageLogger(tf.keras.callbacks.Callback):
-    """
-    Custom image prediction logger callback in wandb.
+    """Custom image prediction logger callback in wandb.
+
     Expects segmentation images and the model class to have a predict_on_image method.
     """
-
     def __init__(
         self, model_wrapper: Model, dataset: Dataset, cell_size: int = DEFAULT_CELL_SIZE, example_count: int = 4
     ):
@@ -47,7 +46,6 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
 
     def on_train_begin(self, epochs, logs=None):  # pylint: disable=W0613
         """Logs the ground truth at train_begin."""
-
         ground_truth = []
         for i, mask in enumerate(self.train_masks):
             plt.figure()
@@ -94,27 +92,22 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
 
 
 class DataShuffler(tf.keras.callbacks.Callback):
-    """
-    Temporary on_epoch_end data shuffling as tf v2.1.0 has the known bug
-    of not calling on_epoch_end for tf.keras.utils.Sequence classes.
-    """
-
+    """Temporary on_epoch_end data shuffling as tf v2.1.0 has the known bug of not calling on_epoch_end."""
     def __init__(self):
         pass
 
     def on_epoch_end(self, epoch, logs=None):
+        """Reshuffle dataset."""
         # print("GLOBAL")
         # print([v for v in globals().keys() if not v.startswith('_')])
         # Access to the global variable "Dataset" here,
         # one should shuffle here or what I ended up doing
         # in the model base class added "shuffle=True" for ".fit"
         # this will only shuffle training data.
-        pass
 
 
 def train_model(model: Model, dataset: Dataset, cfg: Dict) -> Model:
-    """ Model training with wandb callbacks. """
-
+    """Model training with wandb callbacks."""
     dataset_args = cfg["dataset_args"]
     wandb_callback = wandb.keras.WandbCallback()
     image_callback = WandbImageLogger(model, dataset, dataset_args["cell_size"])
@@ -132,27 +125,13 @@ def train_model(model: Model, dataset: Dataset, cfg: Dict) -> Model:
 
 
 def run_experiment(cfg: Dict, save_weights: bool = False):
-    """
-    Runs a training experiment.
-    Args:
-        - cfg: Read yaml configuration file with format:
-            dataset: "TestDataset"
-            dataset_args:
-                version: "dataset_hash"
-            model: "ExampleModel"
-            network: "fcn8"
-            network_args:
-                layers: 4
-                width: 4
-            loss: "binary_crossentropy"
-            optimizer: "adam"
-            train_args:
-                batch_size: 4
-                epochs: 10
-                learning_rate: 3e-04
-        - save_weights: If model weights should be saved.
-    """
+    """Run a training experiment.
 
+    Args:
+        cfg: Parsed yaml configuration file.
+            Check the experiments folder for examples.
+        save_weights: If model weights should be saved.
+    """
     dataset_class_ = get_from_module("spot_detection.datasets", cfg["dataset"])
     model_class_ = get_from_module("spot_detection.models", cfg["model"])
     network_fn_ = get_from_module("spot_detection.networks", cfg["network"])

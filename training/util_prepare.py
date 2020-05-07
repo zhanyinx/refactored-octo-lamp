@@ -11,13 +11,14 @@ import numpy as np
 
 
 def get_file_lists(path: str, format_image: str, format_label: str) -> Tuple[List[str], List[str]]:
-    """
-    Extracts file paths and checks if respective files are present.
+    """Extracts file paths and checks if respective files are present.
+
     Args:
         - Path: Relative or absolute location of directory containing
             images and masks subdirectories.
         - format_image: Format of the image (e.g. tif, png, etc...)
         - format_label: Format of the label (e.g. csv, txt, etc...)
+
     Returns:
         - x_list, y_list: Lists of absolute file paths for the files found
             in the images or masks subdirectories.
@@ -48,12 +49,12 @@ def get_file_lists(path: str, format_image: str, format_label: str) -> Tuple[Lis
 
 
 def remove_zeros(lst: list) -> list:
-    """ Removes all occurences of "0" from a list. """
+    """Removes all occurences of "0" from a list."""
     return [i for i in lst if isinstance(i, np.ndarray)]
 
 
 def _parse_args():
-    """ Argument parser. """
+    """Argument parser."""
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--path", type=str, help="Path of the dataset folder.")
     parser.add_argument(
@@ -103,8 +104,10 @@ def get_prediction_matrix(spot_coord: np.ndarray, size: int, cell_size: int, siz
         size: size of the image from which List of coordinates are extracted.
         cell_size: size of cell used to calculate F1 score, precision and recall.
         size_y: if not provided, it assumes it is squared image, otherwise the second shape of image
-    """
 
+    Returns:
+        - prediction (nd.nparray): numpy array of shape (n, n, 3): p, x, y format for each cell.
+    """
     if not all(isinstance(i, int) for i in (size, cell_size)):
         raise TypeError(f"size and cell_size must be int, but are {type(size), type(cell_size)}.")
 
@@ -130,14 +133,17 @@ def train_valid_split(
     x_list: List[str], y_list: List[str], valid_split: float = 0.2, shuffle: bool = True
 ) -> Iterable[List[str]]:
     """Split two lists (input and predictions).
+
     Splitting into random training and validation sets with an optional shuffling.
 
     Args:
-        x_list: List containing filenames of all input.
-        y_list: List containing filenames of all predictions.
-        valid_split: Number between 0-1 to denote the percentage of examples used for validation.
+        - x_list: List containing filenames of all input.
+        - y_list: List containing filenames of all predictions.
+        - valid_split: Number between 0-1 to denote the percentage of examples used for validation.
+
     Returns:
-        x_train, x_valid, y_train, y_valid: Splited lists containing training or validation examples respectively.
+        - x_train, x_valid, y_train, y_valid: Splited lists containing training
+            or validation examples respectively.
     """
     if not all(isinstance(i, list) for i in [x_list, y_list]):
         raise TypeError(f"x_list, y_list must be list but is {type(x_list)}, {type(y_list)}.")
@@ -158,7 +164,6 @@ def train_valid_split(
 
     def __shuffle(x_list: list, y_list: list):
         """Shuffles two list keeping their relative arrangement."""
-
         combined = list(zip(x_list, y_list))
         random.shuffle(combined)
         x_tuple, y_tuple = zip(*combined)

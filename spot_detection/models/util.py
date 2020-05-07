@@ -4,7 +4,7 @@ import numpy as np
 
 
 def next_power(x: int, k: int = 2) -> int:
-    """ Calculates x's next higher power of k. """
+    """Calculates x's next higher power of k."""
     y, power = 0, 1
     while y < x:
         y = k ** power
@@ -13,16 +13,16 @@ def next_power(x: int, k: int = 2) -> int:
 
 
 def random_cropping(image: np.ndarray, mask: np.ndarray, cell_size: int, crop_size: int = 256) -> np.ndarray:
-    """
-    Randomly crops an image and mask to size crop_size.
+    """Randomly crops an image and mask to size crop_size.
+
     Args:
         - image: Image to be cropped.
         - mask: Mask to be cropped.
         - cell_size: size of cell used to calculate F1 score
         - crop_size: Size to crop image and mask (both dimensions).
+        
     Returns:
-        - crop_image, crop_mask: Cropped image and mask
-            respectively with shape (crop_size, crop_size).
+        - crop_image, crop_mask: Cropped image and mask respectively with shape (crop_size, crop_size).
     """
     if not all(isinstance(i, np.ndarray) for i in [image, mask]):
         raise TypeError(f"image, mask must be np.ndarray but is {type(image), type(mask)}.")
@@ -52,7 +52,7 @@ def random_cropping(image: np.ndarray, mask: np.ndarray, cell_size: int, crop_si
 
 
 def normalize_images(images: np.ndarray) -> np.ndarray:
-    """ Normalizes images based on bit depth. """
+    """Normalizes images based on bit depth."""
     if images.dtype == np.uint8:
         return (images / 255).astype(np.float32)
     if images.dtype == np.uint16:

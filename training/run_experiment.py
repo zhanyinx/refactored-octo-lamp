@@ -1,4 +1,4 @@
-""" Script to run a single experiment. """
+"""Script to run a single experiment."""
 
 import argparse
 import os
@@ -11,7 +11,7 @@ from training.util_training import run_experiment
 
 
 def _parse_args():
-    """ Parse command-line arguments. """
+    """Parse command-line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("-g", "--gpu", type=int, default=None, help="Index of GPU to use.")
     parser.add_argument("-c", "--config", type=str, help="Experiment yaml file.")
@@ -20,7 +20,7 @@ def _parse_args():
 
 
 def main():
-    """ Run experiment. """
+    """Run experiment."""
     args = _parse_args()
 
     if args.gpu is not None:

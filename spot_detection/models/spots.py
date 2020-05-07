@@ -22,7 +22,7 @@ DEFAULT_OPTIMIZER = tf.keras.optimizers.Adam(DEFAULT_TRAIN_ARGS["learning_rate"]
 
 
 class SpotsModel(Model):
-    """ Model to predict spot localization. """
+    """Model to predict spot localization."""
 
     def __init__(
         self, **kwargs,
@@ -42,14 +42,15 @@ class SpotsModel(Model):
 
     @property
     def metrics(self) -> list:
+        """Metrics used in the training."""
         return ["accuracy", "mse", f1_score, l2_norm, f1_l2_combined_loss]
 
     def evaluate(self, x: np.ndarray, y: np.ndarray) -> float:
-        """ Evaluates on a batch of images / masks. """
+        """Evaluates on a batch of images / masks."""
         return 0
 
     def predict_on_image(self, image: np.ndarray) -> np.ndarray:
-        """ Predict on a single input image. """
+        """Predict on a single input image."""
         # if image.dtype == np.uint8:
         #     image = (image / 255).astype(np.float32)
         # if image.dtype == np.uint16:

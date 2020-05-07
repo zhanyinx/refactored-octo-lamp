@@ -1,4 +1,5 @@
 """Spot detection module.
+
 Contains the code to be used by the training/ folder.
 Divided into the following folders:
     - datasets: Unique data import functions.

@@ -1,5 +1,5 @@
-"""
-Computes the baseline value metrics of spot detection given a dataset.
+"""Computes the baseline value metrics of spot detection given a dataset.
+
 Returns a csv file with all metrics.
 Here different metrics are used: f1_score, error on xy, and combination of f1_score and error on xy
 """
@@ -21,16 +21,15 @@ from util_baseline import compute_score
 
 
 def detect_spots(input_image: np.ndarray, cell_size: int) -> np.ndarray:
-    """
-    Use skimage.feature.blob_log to detect spots given an image.
-    Return np.ndarray of shape (n, n, 3):
-            p, x, y format for each cell
+    """Use skimage.feature.blob_log to detect spots given an image.
 
     Args:
         - input_image (np.ndarray): image used to detect spot
         - cell_size (int): size of cell used to calculate F1 score, precision and recall
-    """
 
+    Returns:
+        - xy (np.ndarray): prediction np.ndarray (p, x, y format for each cell)
+    """
     if not isinstance(input_image, np.ndarray):
         raise TypeError(f"input_image must be np.ndarray but is {type(input_image)}.")
 
@@ -44,7 +43,7 @@ def detect_spots(input_image: np.ndarray, cell_size: int) -> np.ndarray:
 
 
 def _parse_args():
-    """ Argument parser. """
+    """Argument parser."""
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--dataset", type=str, required=True, help="Path of the dataset folder.")
     parser.add_argument(
@@ -60,6 +59,7 @@ def _parse_args():
 
 
 def main():
+    """Computes baseline for spots from blob detector."""
     args = _parse_args()
 
     cell_size = args.cell_size
