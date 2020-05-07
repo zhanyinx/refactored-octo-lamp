@@ -6,29 +6,22 @@ import pandas as pd
 import secrets
 import skimage.io
 import sys
-from typing import List, Tuple
+from typing import List, Iterable
 
 sys.path.append("../")
-from training.util_prepare import (
-    extract_basename,
-    train_valid_split,
-    get_prediction_matrix,
-    _parse_args,
-    get_file_lists,
-    remove_zeros
-)
+from training.util_prepare import train_valid_split, get_prediction_matrix, _parse_args, get_file_lists, remove_zeros
 
 
-def group_to_numpy(image: dir, label: dir, conversion: float, cell_size: int, bitdepth: int) -> Tuple[np.ndarray]:
+def group_to_numpy(img: str, label: str, conversion: float, cell_size: int, bitdepth: int) -> Iterable[np.ndarray]:
     """ Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays. 
     """
 
-    image = skimage.io.imread(image)
+    image = skimage.io.imread(img)
     image /= 2 ** bitdepth - 1  # normalise
 
     df = pd.read_table(label)
     if min(image.shape) < 512 or len(df) < 5:
-        return 0, 0
+        return 0, 0  # type: ignore[return-value]
 
     df.columns = ["x", "y"]
     xy = np.stack([df["y"].to_numpy(), df["x"].to_numpy()]).T
@@ -39,8 +32,8 @@ def group_to_numpy(image: dir, label: dir, conversion: float, cell_size: int, bi
 
 
 def files_to_numpy(
-    images: List[dir], labels: List[dir], conversion: float, cell_size: int, bitdepth: int,
-) -> Tuple[np.ndarray]:
+    images: List[str], labels: List[str], conversion: float, cell_size: int, bitdepth: int,
+) -> Iterable[np.ndarray]:
     """ Converts file lists into numpy arrays. """
     np_images = []
     np_labels = []

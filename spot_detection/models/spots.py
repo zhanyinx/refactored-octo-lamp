@@ -32,18 +32,11 @@ class SpotsModel(Model):
     """ Model to predict spot localization. """
 
     def __init__(
-        self,
-        dataset_cls: type = SpotsDataset,
-        network_fn: Callable = fcn,
-        loss_fn: Callable = DEFAULT_LOSS,
-        optimizer_fn: Callable = DEFAULT_OPTIMIZER,
-        train_args: Dict = DEFAULT_TRAIN_ARGS,
-        dataset_args: Dict = None,
-        network_args: Dict = DEFAULT_NETWORK_ARGS,
-        batch_format_fn: Callable = None,
-        batch_augment_fn: Callable = None,
+        self, **kwargs,
     ):
-        self.dataset_args = dataset_args
+
+        super().__init__(**kwargs)
+
         self.batch_augment_fn = functools.partial(
             augment_batch_baseline,
             flip_=self.dataset_args["flip"],
@@ -52,18 +45,6 @@ class SpotsModel(Model):
             rotate_=self.dataset_args["rotate"],
             translate_=self.dataset_args["translate"],
             cell_size=self.dataset_args["cell_size"],
-        )
-
-        super().__init__(
-            dataset_cls,
-            network_fn,
-            loss_fn,
-            optimizer_fn,
-            train_args,
-            dataset_args,
-            network_args,
-            batch_format_fn,
-            batch_augment_fn,
         )
 
     @property

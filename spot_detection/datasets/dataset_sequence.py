@@ -11,14 +11,13 @@ def _shuffle(x, y):
 
 
 class DatasetSequence(tf.keras.utils.Sequence):
-
     def __init__(
         self,
         x: np.ndarray,
         y: np.ndarray,
         batch_size: int = 16,
         augment_fn: Callable = None,
-        format_fn: Callable = None
+        format_fn: Callable = None,
     ):
         self.x = x
         self.y = y
@@ -30,15 +29,14 @@ class DatasetSequence(tf.keras.utils.Sequence):
         """ Returns length of the dataset in unit of batch size"""
 
         if len(self.x) <= self.batch_size:
-            print(
-                "Warning! barch size larger than dataset, setting batch size to length of dataset")
+            print("Warning! barch size larger than dataset, setting batch size to length of dataset")
             self.batch_size = len(self.x)
 
         return int(np.floor(len(self.x) / self.batch_size))
 
-    def __getitem__(self, idx) -> Tuple[np.ndarray]:
+    def __getitem__(self, idx) -> Tuple[np.ndarray, np.ndarray]:
         """ Return a single batch. """
-#        idx = 0  # Overfit to just one batch
+        #        idx = 0  # Overfit to just one batch
         begin = idx * self.batch_size
         end = (idx + 1) * self.batch_size
 

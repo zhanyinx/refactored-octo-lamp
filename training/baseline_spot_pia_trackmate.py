@@ -9,7 +9,7 @@ import numpy as np
 import os.path
 import pandas as pd
 import sys
-from typing import Tuple
+from typing import Tuple, Iterable
 
 sys.path.append("../")
 
@@ -18,8 +18,8 @@ import training.util_trackmate
 
 
 def load_trackmate_data(
-    path: dir, size: int, cell_size: int, conversion: float = 1
-) -> Tuple[np.ndarray]:
+    path: str, size: int, cell_size: int, conversion: float = 1
+) -> Iterable[np.ndarray]:
     """
     Returns two lists of np.ndarray of shape (n,n,3):
     containing p,x,y. One for trackmate labeled, one for human labeled

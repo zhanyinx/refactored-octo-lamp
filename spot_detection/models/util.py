@@ -41,8 +41,8 @@ def random_cropping(image: np.ndarray, mask: np.ndarray, cell_size: int, crop_si
 
     cropped_image = image[start_dim[0] : (start_dim[0] + crop_size), start_dim[1] : (start_dim[1] + crop_size)]
     cropped_mask = mask[
-        (start_dim[0] / cell_size) : ((start_dim[0] + crop_size) / cell_size),
-        (start_dim[1] / cell_size) : ((start_dim[1] + crop_size) / cell_size),
+        int(start_dim[0] / cell_size) : int((start_dim[0] + crop_size) / cell_size),
+        int(start_dim[1] / cell_size) : int((start_dim[1] + crop_size) / cell_size),
         :,
     ]
 

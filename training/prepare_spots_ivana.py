@@ -8,10 +8,9 @@ import skimage.io
 import sys
 
 sys.path.append("../")
-from typing import List, Tuple
+from typing import List, Iterable
 
 from training.util_prepare import (
-    extract_basename,
     train_valid_split,
     get_prediction_matrix,
     _parse_args,
@@ -20,16 +19,16 @@ from training.util_prepare import (
 )
 
 
-def group_to_numpy(image: dir, label: dir, cell_size: int) -> Tuple[np.ndarray]:
+def group_to_numpy(img: str, label: str, cell_size: int) -> Iterable[np.ndarray]:
     """ Reads files groups, sorts them and returns numpy arrays. """
 
-    image = skimage.io.imread(image)
+    image = skimage.io.imread(img)
     # image /= np.max(image) #normalisation
 
     df = pd.read_csv(label)
 
-    if min(image.shape) < 512 or len(df) < 10:
-        return 0, 0
+    if min(image.shape) < 512 or len(df) < 5:
+        return 0, 0  # type: ignore[return-value]
 
     xy = np.stack([df["y"].to_numpy(), df["x"].to_numpy()]).T
     xy = get_prediction_matrix(xy, image.shape[0], cell_size, image.shape[1])
@@ -76,13 +75,13 @@ def random_cropping(image: np.ndarray, mask: np.ndarray, cell_size: int, crop_si
     return cropped_image, cropped_mask
 
 
-def files_to_numpy(images: List[dir], labels: List[dir], cell_size: int, crop_size: int) -> Tuple[np.ndarray]:
+def files_to_numpy(images: List[str], labels: List[str], cell_size: int, crop_size: int) -> Iterable[np.ndarray]:
     """ Converts file lists into numpy arrays. """
     np_images = []
     np_labels = []
 
-    for image, label in zip(images, labels):
-        image, label = group_to_numpy(image, label, cell_size)
+    for img, label_ in zip(images, labels):
+        image, label = group_to_numpy(img, label_, cell_size)
 
         if image is not 0 and any(i > crop_size for i in image.shape):
             image, label = random_cropping(image, label, cell_size, crop_size)

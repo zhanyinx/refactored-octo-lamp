@@ -6,14 +6,15 @@ import os
 import pandas as pd
 import sys
 import skimage.io
+import math
 
 sys.path.append("../")
-from typing import List, Tuple
+from typing import List, Tuple, Iterable
 
 from training.util_prepare import extract_basename
 
 
-def trackmate_get_file_lists(path: dir) -> Tuple[List[dir]]:
+def trackmate_get_file_lists(path: str) -> Iterable[List[str]]:
     """
     Extracts file paths and checks if respective files are present.
 
@@ -27,26 +28,18 @@ def trackmate_get_file_lists(path: dir) -> Tuple[List[dir]]:
     """
     if not os.path.exists(path):
         raise OSError(f"Path {path} must exist.")
-    if not all(
-        os.path.exists(os.path.join(path, i)) for i in ["images", "labels", "trackmate"]
-    ):
-        raise OSError(
-            f"Path {path} must contain an images/ , labels/ and trackmate subdirectory."
-        )
+    if not all(os.path.exists(os.path.join(path, i)) for i in ["images", "labels", "trackmate"]):
+        raise OSError(f"Path {path} must contain an images/ , labels/ and trackmate subdirectory.")
 
     x_list = sorted(glob.glob(f"{os.path.join(path, 'images')}/*.tif"))
     y_list = sorted(glob.glob(f"{os.path.join(path, 'labels')}/*.txt"))
     t_list = sorted(glob.glob(f"{os.path.join(path, 'trackmate')}/*.csv"))
 
     if not len(t_list) == len(y_list):
-        raise ValueError(
-            f"Length of trackmate/ and labels/ must match: {len(t_list)} != {len(y_list)}."
-        )
+        raise ValueError(f"Length of trackmate/ and labels/ must match: {len(t_list)} != {len(y_list)}.")
 
     if not len(x_list) == len(y_list):
-        raise ValueError(
-            f"Length of images/ and labels/ must match: {len(x_list)} != {len(y_list)}."
-        )
+        raise ValueError(f"Length of images/ and labels/ must match: {len(x_list)} != {len(y_list)}.")
 
     if len(y_list) == 0:
         raise ValueError(f"No files found in path {path}.")
@@ -68,16 +61,14 @@ def trackmate_get_file_lists(path: dir) -> Tuple[List[dir]]:
     return x_list, y_list, t_list
 
 
-def trackmate_create_spot_mask(
-    spot_coord: np.ndarray, size: int, cell_size: int
-) -> np.ndarray:
+def trackmate_create_spot_mask(spot_coord: np.ndarray, size: int, cell_size: int) -> np.ndarray:
     """Create mask image with spot"""
-    pred = np.zeros((size // cell_size, size // cell_size, 3))
+    pred = np.zeros((math.ceil(size / cell_size), math.ceil(size / cell_size), 3))
     for s in range(len(spot_coord)):
         i = int(np.floor(spot_coord[s, 0])) // cell_size
         j = int(np.floor(spot_coord[s, 1])) // cell_size
-        rel_x = (spot_coord[s, 0] - i* cell_size)/ cell_size
-        rel_y = (spot_coord[s, 1] - j* cell_size)/ cell_size
+        rel_x = (spot_coord[s, 0] - i * cell_size) / cell_size
+        rel_y = (spot_coord[s, 1] - j * cell_size) / cell_size
         pred[i, j, 0] = 1
         pred[i, j, 1] = rel_x
         pred[i, j, 2] = rel_y
@@ -86,8 +77,8 @@ def trackmate_create_spot_mask(
 
 
 def trackmate_group_to_numpy(
-    image: dir, label: dir, trackmate: dir, conversion: float, size: int, cell_size: int
-) -> Tuple[np.ndarray]:
+    image: str, label: str, trackmate: str, conversion: float, size: int, cell_size: int
+) -> Iterable[np.ndarray]:
     """ Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays. 
     """
 
@@ -96,15 +87,13 @@ def trackmate_group_to_numpy(
     df_trackmate = pd.read_csv(trackmate)
 
     if len(df) < 5:
-        return 0, 0, 0
+        return 0, 0, 0 # type: ignore[return-value]
 
     df.columns = ["y", "x"]
     df_trackmate.columns = ["number", "y", "x"]
 
     xy = np.stack([df["x"].to_numpy(), df["y"].to_numpy()]).T
-    xy_trackmate = np.stack(
-        [df_trackmate["x"].to_numpy(), df_trackmate["y"].to_numpy()]
-    ).T
+    xy_trackmate = np.stack([df_trackmate["x"].to_numpy(), df_trackmate["y"].to_numpy()]).T
 
     xy = xy * conversion
     xy_trackmate = xy_trackmate * conversion
@@ -121,22 +110,15 @@ def trackmate_remove_zeros(lst: list) -> list:
 
 
 def trackmate_files_to_numpy(
-    images: List[dir],
-    labels: List[dir],
-    trackmates: List[dir],
-    conversion: float,
-    size: int,
-    cell_size: int,
-) -> Tuple[np.ndarray]:
+    images: List[str], labels: List[str], trackmates: List[str], conversion: float, size: int, cell_size: int,
+) -> Iterable[np.ndarray]:
     """ Converts file lists into numpy arrays. """
     np_images = []
     np_labels = []
     np_trackmate = []
 
     for image, label, trackmate in zip(images, labels, trackmates):
-        image, label, trackmate = trackmate_group_to_numpy(
-            image, label, trackmate, conversion, size, cell_size
-        )
+        image, label, trackmate = trackmate_group_to_numpy(image, label, trackmate, conversion, size, cell_size)
         np_images.append(image)
         np_labels.append(label)
         np_trackmate.append(trackmate)

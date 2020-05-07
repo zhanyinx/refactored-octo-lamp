@@ -3,7 +3,7 @@ Prepares a dataset from an folder containing .tif images and .csv labels structu
 As usually generated synthetically in Fiji.
 """
 
-from typing import List, Tuple
+from typing import List, Tuple, Iterable
 import numpy as np
 import os
 import pandas as pd
@@ -14,7 +14,6 @@ import sys
 
 sys.path.append("../")
 from training.util_prepare import (
-    extract_basename,
     train_valid_split,
     get_prediction_matrix,
     get_file_lists,
@@ -23,7 +22,7 @@ from training.util_prepare import (
 )
 
 
-def import_data(x_list: List[dir], y_list: List[dir]) -> Tuple[np.ndarray, pd.DataFrame]:
+def import_data(x_list: List[str], y_list: List[str]) -> Tuple[np.ndarray, pd.DataFrame]:
     """ Opens files from lists as images and DataFrames. """
 
     images, labels = [], []
@@ -47,9 +46,9 @@ def import_data(x_list: List[dir], y_list: List[dir]) -> Tuple[np.ndarray, pd.Da
     return images, df
 
 
-def files_to_numpy(images: List[dir], labels: List[dir], cell_size: int = 4) -> Tuple[np.ndarray]:
+def files_to_numpy(images_: List[str], labels_: List[str], cell_size: int = 4) -> Iterable[np.ndarray]:
     """ Converts file lists into numpy arrays. """
-    np_images, labels = import_data(images, labels)
+    np_images, labels = import_data(images_, labels_)
 
     np_labels = []
     for i in labels["img_index"].unique():

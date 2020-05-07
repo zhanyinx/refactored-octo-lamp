@@ -74,9 +74,7 @@ def _f1_score(pred: np.ndarray, true: np.ndarray) -> float:
     return f1_score
 
 
-def _error_on_coordinates(
-    pred: np.ndarray, true: np.ndarray, cell_size: int
-) -> List[float]:
+def _error_on_coordinates(pred: np.ndarray, true: np.ndarray, cell_size: int) -> float:
     """
     Returns average error on spot coordinates.
 
@@ -90,7 +88,7 @@ def _error_on_coordinates(
     """
 
     spot = (true[..., 0] == 1) & (pred[..., 0] == 1)
-    d = 0
+    d = 0.0
     counter = 0
     assert pred.shape == true.shape
 
@@ -107,13 +105,13 @@ def _error_on_coordinates(
     if counter:
         d = d / counter
     else:
-        d = None
+        d = None  # type: ignore
 
     return d
 
 
 def _weighted_average_f1_score_error_coordinates(
-    pred: np.ndarray, true: np.ndarray, cell_size:int, weight: float = 1
+    pred: np.ndarray, true: np.ndarray, cell_size: int, weight: float = 1
 ) -> float:
     """
     Returns weighted single score defined as: 
@@ -135,7 +133,7 @@ def _weighted_average_f1_score_error_coordinates(
             default = 1
     """
     f1_score = _f1_score(pred, true)
-    f1_score = 1 - f1_score
+    f1_score = 1.0 - f1_score
     f1_score = f1_score * weight
 
     error_coordinates = _error_on_coordinates(pred, true, cell_size)

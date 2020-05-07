@@ -28,7 +28,7 @@ def main():
         os.environ["CUDA_VISIBLE_DEVICES"] = f"{args.gpu}"
 
     with open(args.config, "r") as file:
-        cfg = yaml.load(file, Loader=yaml.FullLoader)
+        cfg = yaml.safe_load(file)
 
     run_experiment(cfg)
 

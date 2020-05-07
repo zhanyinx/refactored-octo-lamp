@@ -8,7 +8,9 @@ import tensorflow as tf
 OPTIONS_CONV = {"kernel_size": 3, "padding": "same", "kernel_initializer": "he_normal"}
 
 
-def conv_block(inputs: tf.keras.layers.Layer, filters: int, n_convs: int = 2, dropout: int = 0) -> tf.keras.layers.Layer:
+def conv_block(
+    inputs: tf.keras.layers.Layer, filters: int, n_convs: int = 2, dropout: float = 0
+) -> tf.keras.layers.Layer:
     """Convolutional block."""
     x = inputs
     for _ in range(n_convs):

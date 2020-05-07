@@ -19,17 +19,17 @@ class Model:
 
     def __init__(
         self,
-        dataset_cls: type,
+        dataset_args: Dict,
+        dataset_cls: Dataset,
+        network_args: Dict,
         network_fn: Callable,
         loss_fn: Callable,
         optimizer_fn: Callable,
         train_args: Dict,
-        dataset_args: Dict,
-        network_args: Dict,
         batch_format_fn: Callable = None,
         batch_augment_fn: Callable = None,
     ):
-        self.name = f"{DATESTRING}_{self.__class__.__name__}_{dataset_cls.__name__}_{network_fn.__name__}"
+        self.name = f"{DATESTRING}_{self.__class__.__name__}_{dataset_cls.name}_{network_fn.__name__}"
 
         self.loss_fn = loss_fn
         self.optimizer_fn = optimizer_fn

@@ -1,7 +1,15 @@
 import pathlib
 
+
 class Dataset:
     """ Simple abstract class for datasets. """
+
+    def __init__(self, name: str = None):
+        self.name = name
+        self.x_train = None
+        self.y_train = None
+        self.x_valid = None
+        self.y_valid = None
 
     @classmethod
     def data_dirname(cls):

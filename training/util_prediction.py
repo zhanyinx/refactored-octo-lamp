@@ -45,24 +45,13 @@ def get_coordinate_list(matrix: np.ndarray, size_image: int = 512, size_grid: in
     return np.array([coords_y, coords_x]).T
 
 
-def get_relative_coordinates(
-    coord_spot: Tuple[float], coord_cell: Tuple[float], size_gridcell: int = 8
-) -> Tuple[float]:
-    """Return the relative cell coordinates from absolute image coordinates."""
-    assert len(coord_spot) == 2 and len(coord_cell) == 2
-
-    coord_abs = tuple(map(operator.sub, coord_spot, coord_cell))
-    coord_rel = tuple(map(lambda x: x / size_gridcell, coord_abs))
-    return coord_rel
-
-
 def get_absolute_coordinates(
-    coord_spot: Tuple[float], coord_cell: Tuple[float], size_gridcell: int = 8
-) -> Tuple[float]:
+    coord_spot: Tuple[np.float32, np.float32], coord_cell: Tuple[np.float32, np.float32], size_gridcell: int = 8
+) -> Tuple[np.float32, np.float32]:
     """Return the absolute image coordinates from relative cell coordinates."""
     assert len(coord_spot) == 2 and len(coord_cell) == 2
 
     coord_rel = tuple(map(lambda x: x * size_gridcell, coord_spot))
     coord_abs = tuple(map(operator.add, coord_cell, coord_rel))
     # coord_abs = tuple(map(lambda x: int(x), coord_abs))
-    return coord_abs
+    return coord_abs  # type: ignore

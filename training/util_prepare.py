@@ -8,7 +8,7 @@ import glob
 import math
 
 
-def get_file_lists(path: dir, format_image: str, format_label: str) -> Tuple[List[dir]]:
+def get_file_lists(path: str, format_image: str, format_label: str) -> Tuple[List[str], List[str]]:
     """
     Extracts file paths and checks if respective files are present.
     Args:
@@ -88,7 +88,7 @@ def _parse_args():
     return args
 
 
-def extract_basename(path: dir) -> str:
+def extract_basename(path: str) -> str:
     """Returns the basename removing path and extension."""
     return os.path.splitext(os.path.basename(path))[0]
 
@@ -125,8 +125,8 @@ def get_prediction_matrix(spot_coord: np.ndarray, size: int, cell_size: int, siz
 
 
 def train_valid_split(
-    x_list: List[dir], y_list: List[dir], valid_split: float = 0.2, shuffle: bool = True
-) -> Iterable[List[dir]]:
+    x_list: List[str], y_list: List[str], valid_split: float = 0.2, shuffle: bool = True
+) -> Iterable[List[str]]:
     """Split two lists (input and predictions).
     Splitting into random training and validation sets with an optional shuffling.
 

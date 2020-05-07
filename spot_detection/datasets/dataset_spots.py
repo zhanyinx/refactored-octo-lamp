@@ -12,19 +12,12 @@ class SpotsDataset(Dataset):
     """
 
     def __init__(self, name: str):
-        self.name = name
-        self.x_train = None
-        self.y_train = None
-        self.x_valid = None
-        self.y_valid = None
-
-    def __name__(self) -> str:
-        return "spots"
+        super().__init__(name)
 
     @property
-    def data_filename(self) -> dir:
-        return f"{os.path.join(DATA_DIRNAME, self.name)}.npz"
-    
+    def data_filename(self) -> str:
+        return f"{os.path.join(DATA_DIRNAME, self.name)}.npz" # type: ignore[arg-type]
+
     def load_data(self) -> None:
         with np.load(self.data_filename, allow_pickle=True) as data:
             self.x_train = data["x_train"]
