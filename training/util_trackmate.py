@@ -20,7 +20,7 @@ def trackmate_get_file_lists(path: str) -> Iterable[List[str]]:
     Args:
         - Path: Relative or absolute location of directory containing
             images and labels subdirectories.
-            
+
     Returns:
         - x_list, y_list, t_list: Lists of absolute file paths for the files found
             in the images, labels and trackmate subdirectories.

@@ -5,7 +5,7 @@ import tensorflow.keras.backend as K
 
 def dice_coef(y_true, y_pred, smooth=1):
     """Computes the dice coefficient on a batch of tensors.
-    
+
     Dice = (2*|X & Y|)/ (|X|+ |Y|)
          =  2*sum(|A*B|)/(sum(A^2)+sum(B^2))
     ref: https://arxiv.org/pdf/1606.04797v1.pdf

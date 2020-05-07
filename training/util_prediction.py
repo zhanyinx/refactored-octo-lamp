@@ -16,7 +16,7 @@ def get_coordinate_list(matrix: np.ndarray, size_image: int = 512, size_grid: in
         matrix: Matrix representation of spot coordinates.
         size_image: Default image size the grid was layed on.
         size_grid: Number of grid cells used.
-        
+
     Returns:
         Array of x, y coordinates with the shape (n, 2).
     """

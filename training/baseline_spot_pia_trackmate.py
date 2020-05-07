@@ -24,7 +24,7 @@ def load_trackmate_data(path: str, size: int, cell_size: int, conversion: float 
         - size (int): size of the images labeled by trackmate or human.
         - cell_size (int): size of cell used to calculate F1 score, precision and recall.
         - conversion (float): scaling factor used to convert coordinates into pixel unit (default = 1, no conversion).
-        
+
     Returns:
         - images (np.ndarray): a numpy array of images.
         - label_true (np.ndarray): true mask (label or prediction)

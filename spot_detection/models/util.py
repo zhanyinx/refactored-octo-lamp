@@ -20,7 +20,7 @@ def random_cropping(image: np.ndarray, mask: np.ndarray, cell_size: int, crop_si
         - mask: Mask to be cropped.
         - cell_size: size of cell used to calculate F1 score
         - crop_size: Size to crop image and mask (both dimensions).
-        
+
     Returns:
         - crop_image, crop_mask: Cropped image and mask respectively with shape (crop_size, crop_size).
     """

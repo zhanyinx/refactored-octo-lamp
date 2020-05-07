@@ -22,7 +22,7 @@ def precision_(pred: np.ndarray, true: np.ndarray) -> float:
             p, x, y format for each cell.
         - true: np.ndarray of shape (n, n, 3):
             p, x, y format for each cell
-            
+
     Returns:
         - precision (float)
     """

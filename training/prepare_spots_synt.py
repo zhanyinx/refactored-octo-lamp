@@ -20,8 +20,8 @@ from training.util_prepare import (
 
 def import_data(x_list: List[str], y_list: List[str]) -> Tuple[np.ndarray, pd.DataFrame]:
     """Opens files from lists as images and DataFrames."""
-    images, labels = [], []
     n_images = 0
+    images, labels = [], []
     for x, y in zip(x_list, y_list):
 
         # Image import

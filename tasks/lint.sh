@@ -30,9 +30,9 @@ pydocstyle training/ || FAILURE=true
 # pytest || FAILURE=true
 # cd ../../
 
-cd ./training/tests/
-pytest || FAILURE=true
-cd ../../
+#cd ./training/tests/
+#pytest || FAILURE=true
+#cd ../../
 
 cd ./tasks
 

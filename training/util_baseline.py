@@ -19,7 +19,7 @@ def compute_score(true: np.ndarray, pred: np.ndarray, cell_size: int, weight: fl
         - cell_size: size of cells in the grid used to calculate
           F1 score, relative coordinates
         - weight: weight to on f1 score
-        
+
     Returns:
         - df (pd.DataFrame): DataFrame with scores.
     """
