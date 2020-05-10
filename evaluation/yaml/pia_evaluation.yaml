@@ -1,5 +1,4 @@
-name: "pia_spots"
-comments: "Pia spots full dataset, yes augmentation, yes dropout"
+comments: "Evaluation"
 dataset: "SpotsDataset"
 dataset_args:
     version: "pia_spots_c7016ca6"
@@ -13,9 +12,6 @@ model: "SpotsModel"
 network: "resnet"
 network_args:
     n_channels: 3
-loss: "binary_crossentropy"
-optimizer: "adam"
+use_model: True
 train_args:
-    batch_size: 1
-    epochs: 2000
-    learning_rate: 3e-5
+    pretrained: "../models/model_pia_spots_1589126087.h5"

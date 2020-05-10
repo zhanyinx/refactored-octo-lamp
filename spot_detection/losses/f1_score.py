@@ -25,9 +25,6 @@ def precision_score(y_true, y_pred):
 
 def f1_score(y_true, y_pred):
     """F1 = 2 * (precision*recall) / (precision+recall)."""
-    if not K.ndim(y_true) == K.ndim(y_pred):
-        raise ValueError(f"true/pred shapes must match: {y_true.shape} != {y_pred.shape}")
-
     precision = precision_score(y_true, y_pred)
     recall = recall_score(y_true, y_pred)
     return 2 * ((precision * recall) / (precision + recall + K.epsilon()))

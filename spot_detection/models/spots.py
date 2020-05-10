@@ -8,7 +8,6 @@ import tensorflow as tf
 from spot_detection.losses.f1_score import f1_score
 from spot_detection.losses.l2_norm import l2_norm, f1_l2_combined_loss
 from spot_detection.models.base import Model
-from spot_detection.models.util import next_power
 from spot_detection.models.util_augment import augment_batch_baseline
 
 DEFAULT_TRAIN_ARGS = {
@@ -23,7 +22,6 @@ DEFAULT_OPTIMIZER = tf.keras.optimizers.Adam(DEFAULT_TRAIN_ARGS["learning_rate"]
 
 class SpotsModel(Model):
     """Model to predict spot localization."""
-
     def __init__(
         self, **kwargs,
     ):
@@ -43,11 +41,13 @@ class SpotsModel(Model):
     @property
     def metrics(self) -> list:
         """Metrics used in the training."""
-        return ["accuracy", "mse", f1_score, l2_norm, f1_l2_combined_loss]
-
-    def evaluate(self, x: np.ndarray, y: np.ndarray) -> float:
-        """Evaluates on a batch of images / masks."""
-        return 0
+        return [
+            "accuracy",
+            "mse",
+            f1_score,
+            l2_norm,
+            f1_l2_combined_loss,
+        ]
 
     def predict_on_image(self, image: np.ndarray) -> np.ndarray:
         """Predict on a single input image."""
@@ -56,9 +56,9 @@ class SpotsModel(Model):
         # if image.dtype == np.uint16:
         #     image = (image / 65535).astype(np.float32)
 
-        pad_bottom = next_power(image.shape[0]) - image.shape[0]
-        pad_right = next_power(image.shape[1]) - image.shape[1]
-        image = np.pad(image, ((0, pad_bottom), (0, pad_right)), "reflect")
+        # pad_bottom = next_power(image.shape[0]) - image.shape[0]
+        # pad_right = next_power(image.shape[1]) - image.shape[1]
+        # image = np.pad(image, ((0, pad_bottom), (0, pad_right)), "reflect")
 
         pred = self.network.predict(image[None, ..., None], batch_size=1).squeeze()
         # pred = pred[:pred.shape[0]-pad_bottom, :pred.shape[1]-pad_right]

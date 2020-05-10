@@ -1,5 +1,5 @@
 name: "Ivana_spots"
-comments: "Ivana spots full dataset: dropout + augmentation"
+comments: "Ivana spots full dataset: dropout + augmentation replicate"
 dataset: "SpotsDataset"
 dataset_args:
     version: "ivana_spot_cdf510ae"

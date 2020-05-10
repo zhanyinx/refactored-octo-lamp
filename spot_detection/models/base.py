@@ -2,12 +2,14 @@
 
 import pathlib
 import datetime
-from typing import Callable, Dict
+from typing import Callable, Dict, List
 
 import numpy as np
 
 from spot_detection.datasets.dataset import Dataset
 from spot_detection.datasets.dataset_sequence import DatasetSequence
+from spot_detection.losses.f1_score import f1_score
+from spot_detection.losses.l2_norm import l2_norm
 
 DIRNAME = pathlib.Path(__file__).parents[1].resolve() / "weights"
 DATESTRING = datetime.datetime.now().strftime("%Y%d%m_%H%M")
@@ -90,11 +92,19 @@ class Model:
             # workers=1,
         )
 
-    def evaluate(self, x: np.ndarray, y: np.ndarray) -> float:
-        """Evaluate model."""
-        sequence = DatasetSequence(x, y, batch_size=self.train_args["batch_size"])
-        preds = self.network.predict(sequence)
-        return np.mean(np.square(preds) - np.square(y))
+    def evaluate(self, x: np.ndarray, y: np.ndarray) -> List[float]:
+        """Evaluates on images / masks and return l2 norm and f1 score."""
+        if x.ndim < 4:
+            x = np.expand_dims(x, -1)
+
+        preds = self.network.predict(x)
+        preds = np.float32(preds)
+        y_float32 = np.float32(y)
+
+        l2_norm_ = l2_norm(y_float32, preds) * self.dataset_args["cell_size"]
+        f1_score_ = f1_score(y_float32, preds)
+
+        return [f1_score_.numpy(), l2_norm_.numpy()]
 
     def load_weights(self) -> None:
         """Load model weights."""
