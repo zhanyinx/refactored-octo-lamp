@@ -1,4 +1,4 @@
-comments: "Evaluation"
+comments: "Evaluation********************************************************************"
 dataset: "SpotsDataset"
 dataset_args:
     version: "ivana_spot_cdf510ae"
@@ -12,6 +12,8 @@ model: "SpotsModel"
 network: "resnet"
 network_args:
     n_channels: 3
-use_model: True
+pred_args:
+    use_gauss: True
+    crop_size: 4
 train_args:
-    pretrained: "../models/model_Ivana_spots_1588846057.h5"
+    pretrained: "/tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_Ivana_spots_1588694690.h5"

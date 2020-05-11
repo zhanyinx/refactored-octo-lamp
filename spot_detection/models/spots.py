@@ -60,7 +60,7 @@ class SpotsModel(Model):
         # pad_right = next_power(image.shape[1]) - image.shape[1]
         # image = np.pad(image, ((0, pad_bottom), (0, pad_right)), "reflect")
 
-        pred = self.network.predict(image[None, ..., None], batch_size=1).squeeze()
+        pred = self.network.predict(image[None, ..., None], batch_size=1)
         # pred = pred[:pred.shape[0]-pad_bottom, :pred.shape[1]-pad_right]
 
         return pred

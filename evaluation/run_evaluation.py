@@ -25,10 +25,13 @@ def main():
         cfg = yaml.safe_load(file)
 
     predictor = SpotPredictor(cfg)
-    f1_score, l2_norm = predictor.evaluate(use_model=cfg['use_model'])
+    f1_score, l2_norm = predictor.evaluate()
+
+    dataset_args = cfg.get("dataset_args", {})
+    name = dataset_args["version"]
 
     cfg["evaluation"] = {"f1_score": float(f1_score), "l2_norm": float(l2_norm)}
-    with open("result.yaml", "a") as file:
+    with open(f"../evaluation/{name}.evaluation.yaml", "a") as file:
         yaml.dump(cfg, file)
 
 

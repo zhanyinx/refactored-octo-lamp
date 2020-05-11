@@ -53,6 +53,6 @@ min-public-methods = 0
 # Maximum number of attributes for a class (see R0902).
 max-attributes = 15
 
-max-locals = 18
+max-locals = 25
 
 max-args = 10 
