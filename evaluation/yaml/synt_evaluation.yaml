@@ -12,6 +12,6 @@ model: "SpotsModel"
 network: "resnet"
 network_args:
     n_channels: 3
-use_model: True
+use_model: False
 train_args:
     pretrained: "../models/model_octo-lamp_1589125760.h5"
