@@ -14,6 +14,7 @@ from training.util_prediction import get_coordinate_list
 
 def read_image(image_uri: str) -> np.ndarray:
     """Read image_uri."""
+
     def read_image_from_filename(image_filename):
         return skimage.io.imread(image_filename)
 
@@ -91,6 +92,10 @@ def gauss_single_spot(image: np.ndarray, x_coord: float, y_coord: float, crop_si
     x0 = popt[1] + start_dim2
     y0 = popt[2] + start_dim1
 
+    # if predicted spot is out of the border of the image
+    if x0 > image.shape[1] or y0 > image.shape[0]:
+        return x_coord, y_coord
+
     return x0, y0
 
 
@@ -107,7 +112,7 @@ def gauss_single_image(image: np.ndarray, mask: np.ndarray, cell_size: int = 4, 
         return mask
     # prediction_coord = [x for x in prediction_coord if any(v != 0 for v in x)]
     prediction_coord = np.flip(np.array(prediction_coord), axis=1)
-    pred = get_prediction_matrix(prediction_coord, image.shape[0], cell_size, image.shape[0])
+    pred = get_prediction_matrix(prediction_coord, image.shape[0], cell_size, image.shape[1])
     return np.array(pred)
 
 

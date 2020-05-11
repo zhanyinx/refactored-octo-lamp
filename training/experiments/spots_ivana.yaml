@@ -1,12 +1,12 @@
 name: "Ivana_spots"
-comments: "Ivana spots full dataset: dropout + augmentation replicate"
+comments: "Ivana spots full dataset: dropout + augmentation only gauss + flip"
 dataset: "SpotsDataset"
 dataset_args:
     version: "ivana_spot_cdf510ae"
     cell_size: 4
     flip: True
-    illuminate: True
-    rotate: True
+    illuminate: False
+    rotate: False
     gaussian_noise: True
     translate: False
 model: "SpotsModel"

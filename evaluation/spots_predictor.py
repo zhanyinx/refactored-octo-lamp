@@ -50,7 +50,7 @@ class SpotPredictor:
         else:
             image = image_or_filename
         pred = self.model.predict_on_image(image)
-        return pred[0]
+        return pred
 
     def gauss_predict(self, image_or_filename: Union[np.ndarray, str]) -> np.ndarray:
         """Predict on a single image using gauss for localisation.
