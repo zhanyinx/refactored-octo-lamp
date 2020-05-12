@@ -1,4 +1,4 @@
-"""Utility functions for spot detection module."""
+"""Utility functions for evaluation module."""
 
 import os
 import importlib
@@ -87,14 +87,14 @@ def gauss_single_spot(image: np.ndarray, x_coord: float, y_coord: float, crop_si
     try:
         popt, _ = opt.curve_fit(gauss_2d, (xx.ravel(), yy.ravel()), crop.ravel(), p0=initial_guess, bounds=bounds)
     except RuntimeError:
-        return x_coord, y_coord
+        return y_coord, x_coord
 
     x0 = popt[1] + start_dim2
     y0 = popt[2] + start_dim1
 
     # if predicted spot is out of the border of the image
-    if x0 > image.shape[1] or y0 > image.shape[0]:
-        return x_coord, y_coord
+    if x0 >= image.shape[1] or y0 >= image.shape[0]:
+        return y_coord, x_coord
 
     return x0, y0
 
@@ -106,6 +106,13 @@ def gauss_single_image(image: np.ndarray, mask: np.ndarray, cell_size: int = 4, 
     for i in range(len(coord_list)):
         x_coord = coord_list[i, 0]
         y_coord = coord_list[i, 1]
+
+        # Avoid spots at the border of the image (out of the grid in the pred np.ndarray)
+        if x_coord >= len(image):
+            x_coord = len(image) - 0.0001
+        if y_coord == len(image):
+            y_coord = len(image) - 0.0001
+
         prediction_coord.append(gauss_single_spot(image, x_coord, y_coord, crop_size))
 
     if not prediction_coord:
