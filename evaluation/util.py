@@ -87,16 +87,17 @@ def gauss_single_spot(image: np.ndarray, x_coord: float, y_coord: float, crop_si
     try:
         popt, _ = opt.curve_fit(gauss_2d, (xx.ravel(), yy.ravel()), crop.ravel(), p0=initial_guess, bounds=bounds)
     except RuntimeError:
-        return y_coord, x_coord
+        return x_coord, y_coord
 
     x0 = popt[1] + start_dim2
     y0 = popt[2] + start_dim1
 
     # if predicted spot is out of the border of the image
     if x0 >= image.shape[1] or y0 >= image.shape[0]:
-        return y_coord, x_coord
+        return x_coord, y_coord
 
-    return x0, y0
+    # return x0, y0
+    return x_coord, y_coord
 
 
 def gauss_single_image(image: np.ndarray, mask: np.ndarray, cell_size: int = 4, crop_size: int = 4):
