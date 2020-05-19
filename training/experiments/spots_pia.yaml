@@ -1,13 +1,13 @@
 name: "pia_spots"
-comments: "Pia spots full dataset, yes augmentation, yes dropout"
+comments: "Pia spots full dataset, no augmentation, yes dropout, np.max norm"
 dataset: "SpotsDataset"
 dataset_args:
-    version: "pia_spots_c7016ca6"
+    version: "pia_spots_ae714f3b"
     cell_size: 4
-    flip: True
-    illuminate: True
-    rotate: True
-    gaussian_noise: True
+    flip: False
+    illuminate: False
+    rotate: False
+    gaussian_noise: False
     translate: False
 model: "SpotsModel"
 network: "resnet"

@@ -7,10 +7,10 @@ dataset_args:
   illuminate: true
   rotate: true
   translate: false
-  version: spots_synt_harder_e4cd83b6
+  version: pia_spots_ae714f3b
 evaluation:
-  f1_score: 0.9110927581787109
-  l2_norm: 0.13391974568367004
+  f1_score: 0.7196205854415894
+  l2_norm: 0.13404645025730133
 model: SpotsModel
 network: resnet
 network_args:
@@ -19,7 +19,7 @@ pred_args:
   crop_size: 4
   use_gauss: false
 train_args:
-  pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_octo-lamp_1589125760.h5
+  pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_pia_spots_1589820239.h5
 comments: Evaluation********************************************************************
 dataset: SpotsDataset
 dataset_args:
@@ -29,10 +29,10 @@ dataset_args:
   illuminate: true
   rotate: true
   translate: false
-  version: spots_synt_harder_e4cd83b6
+  version: pia_spots_ae714f3b
 evaluation:
-  f1_score: 0.7874202132225037
-  l2_norm: 0.2154620885848999
+  f1_score: 0.7196205854415894
+  l2_norm: 0.14091438055038452
 model: SpotsModel
 network: resnet
 network_args:
@@ -41,7 +41,7 @@ pred_args:
   crop_size: 4
   use_gauss: true
 train_args:
-  pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_octo-lamp_1589125760.h5
+  pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_pia_spots_1589820239.h5
 comments: Evaluation********************************************************************
 dataset: SpotsDataset
 dataset_args:
@@ -51,10 +51,10 @@ dataset_args:
   illuminate: true
   rotate: true
   translate: false
-  version: spots_synt_harder_e4cd83b6
+  version: pia_spots_ae714f3b
 evaluation:
-  f1_score: 0.8748814463615417
-  l2_norm: 0.1649445742368698
+  f1_score: 0.7196205854415894
+  l2_norm: 0.14091438055038452
 model: SpotsModel
 network: resnet
 network_args:
@@ -63,4 +63,4 @@ pred_args:
   crop_size: 8
   use_gauss: true
 train_args:
-  pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_octo-lamp_1589125760.h5
+  pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_pia_spots_1589820239.h5

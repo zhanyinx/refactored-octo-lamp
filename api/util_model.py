@@ -39,7 +39,7 @@ def predict_crop(
 
 
 def predict_baseline(
-    image: np.ndarray, model: tf.keras.models.Model, localisator: str = "Network localisation", bit_depth: int = 16
+    image: np.ndarray, model: tf.keras.models.Model, localisator: str = "Network localisation"
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Returns a binary or categorical model based prediction of an image.
 

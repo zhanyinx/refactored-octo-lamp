@@ -51,6 +51,7 @@ def next_multiple_(x: int, base: int = 512) -> int:
         x = x + (base - x % base)
     return x
 
+
 # TO DO: save image + spot?
 def adaptive_imsave(fname: str, image: np.ndarray, image_type: str) -> None:
     """Saves images according to their selected image type."""

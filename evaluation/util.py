@@ -24,6 +24,7 @@ def read_image(image_uri: str) -> np.ndarray:
         img = None
         if local_file:
             img = read_image_from_filename(image_uri)
+            img = img / np.max(img)
         assert img is not None
     except ValueError:
         raise ValueError(f"Could not load image at {image_uri}")

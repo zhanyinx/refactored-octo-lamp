@@ -4,7 +4,7 @@ import logging
 import os
 import uuid
 import glob
-from typing import Iterable
+from typing import Iterable, Dict
 
 import gdown
 from flask import (
@@ -49,8 +49,7 @@ log = logging.getLogger()
 # Utils / helper functions
 ########################################
 def load_model(model_id: str) -> tf.keras.models.Model:
-    """ Downloads and loads models into memory from google drive h5 files. """
-
+    """Downloads and loads models into memory from google drive h5 files."""
     model_file = os.path.join(app.config["MODEL_FOLDER"], f"{model_id}.h5")
     if not os.path.exists(model_file):
         model_file = gdown.download(f"https://drive.google.com/uc?id={model_id}", model_file)
@@ -59,16 +58,19 @@ def load_model(model_id: str) -> tf.keras.models.Model:
 
 
 def predict(
-    file: str, image_type: str, model_type: str, localisator: str = "Network localisation", single_: bool = False
+    file: Dict, image_type: str, model_type: str, localisator: str = "Network localisation", single_: bool = False
 ) -> Iterable[str]:
     """Adaptively preprocesses, predicts, and saves images returning the filename(s)."""
     log.info(f'Predicting with file "{file}", image "{image_type}", model {model_type}".')
 
     # Naming
     fname = os.path.join(app.config["UPLOAD_FOLDER"], secure_filename(file.filename))
+
+    # Output format
     ext = "tiff"
     if single_:
         ext = "png"
+
     basename = f'{secure_filename(file.filename).split(".")[0]}.{ext}'
     fname_in = os.path.join(app.config["DISPLAY_FOLDER"], basename)
     fname_out = os.path.join(app.config["PROCESSED_FOLDER"], basename)
@@ -211,7 +213,7 @@ def predict_batch():
 
 @app.route("/help")
 def help():  # pylint: disable=redefined-builtin
-    """Help function"""
+    """Help function."""
     return render_template("help.html", title="Help")
 
 
@@ -256,6 +258,7 @@ def delete_all(url):
     log.info("All files removed.")
 
     return redirect(url_for(url))
+
 
 # TO DO: remember to remove debug=True in deployment
 if __name__ == "__main__":

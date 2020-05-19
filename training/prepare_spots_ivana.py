@@ -21,7 +21,7 @@ from training.util_prepare import (
 def group_to_numpy(img: str, label: str, cell_size: int) -> Iterable[np.ndarray]:
     """Reads files groups, sorts them and returns numpy arrays."""
     image = skimage.io.imread(img)
-    # image /= np.max(image) #normalisation
+    image = image / np.max(image)  # normalisation
 
     df = pd.read_csv(label)
 

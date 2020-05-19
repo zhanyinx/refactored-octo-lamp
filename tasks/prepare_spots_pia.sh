@@ -8,6 +8,4 @@ python ../training/prepare_spots_pia.py \
     --valid_split 0.2 \
     --image_format tif \
     --label_format txt \
-    --cell_size 4 \
-    --bitdepth 16
-
+    --cell_size 4

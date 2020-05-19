@@ -1,7 +1,7 @@
 comments: "Evaluation********************************************************************"
 dataset: "SpotsDataset"
 dataset_args:
-    version: "pia_spots_c7016ca6"
+    version: "pia_spots_ae714f3b"
     cell_size: 4
     flip: True
     illuminate: True
@@ -14,6 +14,6 @@ network_args:
     n_channels: 3
 pred_args:
     use_gauss: True
-    crop_size: 4
+    crop_size: 8
 train_args:
-    pretrained: "/tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_pia_spots_1589126000.h5"
+    pretrained: "/tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_pia_spots_1589820239.h5"

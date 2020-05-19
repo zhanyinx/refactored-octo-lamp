@@ -64,9 +64,6 @@ def _parse_args():
         "-z", "--cell_size", type=int, default=4, required=True, help="Size of cell in the grid for making y_true",
     )
     parser.add_argument(
-        "-d", "--bitdepth", type=int, default=1, required=False, help="Bitdepth of image",
-    )
-    parser.add_argument(
         "-i", "--image_format", type=str, default="tif", required=False, help="Format of images (e.g. tif, png)",
     )
     parser.add_argument(

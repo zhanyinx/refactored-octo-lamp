@@ -26,6 +26,7 @@ def import_data(x_list: List[str], y_list: List[str]) -> Tuple[np.ndarray, pd.Da
 
         # Image import
         image = skimage.io.imread(x)
+        image = image / np.max(image)
         assert image.ndim == 3
         images.append(image)
 

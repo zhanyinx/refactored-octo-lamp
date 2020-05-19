@@ -1,8 +1,8 @@
 name: "octo-lamp"
-comments: "Spot overfitting."
+comments: "No augmentation, yes dropout, np.max norm"
 dataset: "SpotsDataset"
 dataset_args:
-    version: "spots_synt_harder_e4cd83b6"
+    version: "spots_synt_harder_d08750e1"
     cell_size: 4
     flip: False
     illuminate: False
