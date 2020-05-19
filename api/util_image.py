@@ -2,6 +2,8 @@
 
 import numpy as np
 import skimage.io
+import matplotlib.pyplot as plt
+import pandas as pd
 import tifffile
 
 ALLOWED_EXTENSIONS = ["tif", "tiff", "jpg", "jpeg", "stk", "png"]
@@ -53,7 +55,7 @@ def next_multiple_(x: int, base: int = 512) -> int:
 
 
 # TO DO: save image + spot?
-def adaptive_imsave(fname: str, image: np.ndarray, image_type: str) -> None:
+def adaptive_imsave(fname: str, image: np.ndarray, image_type: str, prediction: pd.DataFrame = None) -> None:
     """Saves images according to their selected image type."""
     image = np.array(image).squeeze()
 
@@ -62,7 +64,12 @@ def adaptive_imsave(fname: str, image: np.ndarray, image_type: str) -> None:
     if image.ndim not in [2, 3]:
         raise ValueError(f"Image must be 2D or 3D but is {image.ndim}D.")
 
-    if image_type in ["One Frame (Grayscale or RGB)", "Z-Stack", "Time-Series"]:
-        skimage.io.imsave(fname, image)
-    if image_type == "All Frames":
+    if image_type in ["One Frame (Grayscale or RGB)", "Z-Stack"]:
+        plt.axis('off')
+        plt.imshow(image)
+        if prediction is not None:
+            plt.scatter(prediction.x, prediction.y, marker="+", s=50, color="r")
+        plt.savefig(fname, bbox_inches='tight', pad_inches=0)
+        # skimage.io.imsave(fname, image)
+    if image_type == ["All Frames", "Time-Series"]:
         tifffile.imsave(fname, image, imagej=True)

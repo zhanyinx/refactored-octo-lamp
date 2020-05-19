@@ -8,6 +8,7 @@ __pycache__/
 # Hidden files
 *.profraw
 *.DS_Store
+nohup.out
 
 # Large files
 *.h5

@@ -34,12 +34,10 @@ app.jinja_env.filters["zip"] = zip  # pylint: disable=no-member
 
 IMAGE_TYPES = ["One Frame (Grayscale or RGB)", "Z-Stack", "Time-Series"]
 MODEL_IDS = {
-    "Nuclear Semantic": "1XePQvBqgVx1zZZeYEryFd56ujgZumA9F",
-    "Nuclear Instances": "166rnQYPQmzewIAjrbU7Ye-BhFotq2wnA",
-    "Stress-Granules": "1SjjG4FbU9VkKTlN0Gvl7AsfiaoBKF7DB",
-    "Cytoplasm (SunTag Background)": "1pVhyF81T4t7hh16dYKT3uJa5WCUQUI6X",
+    "Spot Detection": "1XePQvBqgVx1zZZeYEryFd56ujgZumA9F",
 }
-MODELS = {}
+LOCALISATION_TYPES = ["Neural network", "Gaussian fitting"]
+MODELS: Dict[str, tf.keras.models.Model] = {}
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(filename)s %(funcName)s %(lineno)s - %(message)s"
 logging.basicConfig(filename="./fluffy.log", level=logging.DEBUG, format=LOG_FORMAT, filemode="a")
 log = logging.getLogger()
@@ -63,7 +61,7 @@ def predict(
     """Adaptively preprocesses, predicts, and saves images returning the filename(s)."""
     log.info(f'Predicting with file "{file}", image "{image_type}", model {model_type}".')
 
-    # Naming
+    # Get filename from request.form.get
     fname = os.path.join(app.config["UPLOAD_FOLDER"], secure_filename(file.filename))
 
     # Output format
@@ -71,6 +69,7 @@ def predict(
     if single_:
         ext = "png"
 
+    # Naming
     basename = f'{secure_filename(file.filename).split(".")[0]}.{ext}'
     fname_in = os.path.join(app.config["DISPLAY_FOLDER"], basename)
     fname_out = os.path.join(app.config["PROCESSED_FOLDER"], basename)
@@ -80,14 +79,14 @@ def predict(
     # Processing
     original = adaptive_imread(file=fname)
     preprocessed = adaptive_preprocessing(image=original, image_type=image_type)
-    prediction = adaptive_prediction(image=preprocessed, model=MODELS[model_type], localisator=localisator)
+    prediction = adaptive_prediction(images=preprocessed, model=MODELS[model_type], localisator=localisator)
     log.info(f"Prediction returned.")
 
     # Saving
     if single_:
         adaptive_imsave(fname=fname_in, image=preprocessed, image_type=image_type)
 
-    adaptive_imsave(fname=fname_out, image=prediction, image_type=image_type)
+    adaptive_imsave(fname=fname_out, image=prediction, image_type=image_type, prediction=prediction)
     log.info(f"Predictions saved.")
 
     if single_:
@@ -124,6 +123,7 @@ def single():
     """Standard "Single Images" page."""
     image_selection = request.cookies.get("image_selection")
     model_selection = request.cookies.get("model_selection")
+    localisation_selection = request.cookies.get("localisation_selection")
 
     return render_template(
         "single.html",
@@ -132,6 +132,8 @@ def single():
         image_selection=image_selection,
         model_options=list(MODEL_IDS.keys()),
         model_selection=model_selection,
+        localisation_options=LOCALISATION_TYPES,
+        localisation_selection=localisation_selection,
     )
 
 
@@ -146,13 +148,11 @@ def predict_single():
         f"Single selections - file: {file}, image: {image_selection}, model: {model_selection}, localisation: {loc}."
     )
 
-    fname_in, fname_out, fname_instances = predict(
+    fname_in, fname_out = predict(
         file=file, image_type=image_selection, model_type=model_selection, localisator=loc, single_=True
     )
-    if fname_instances is None:
-        pred_display = fname_out
-    else:
-        pred_display = fname_instances
+
+    pred_display = fname_out
 
     resp = make_response(
         render_template(
@@ -161,8 +161,6 @@ def predict_single():
             original=fname_in,
             prediction=fname_out,
             prediction_display=pred_display,
-            # import itertools
-            # zipped_list=list(itertools.chain(*list(zip(fname_in, fname_out))))
         )
     )
     resp.set_cookie("image_selection", image_selection)

@@ -41,6 +41,19 @@
                 </select>
             </div>
 
+            <!-- Spot localisation selection -->
+            <div class="form-group mb-3">
+                <div class="form-group-prepend">
+                    <label class="form-group-text" for="model-type">Localisation Method</label>
+                </div>
+                <select id="localisation-type" name="localisation" class="custom-select" required>
+                    <option selected disabled value="">Choose...</option>
+                    {% for option in localisation_options %}
+                    <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
             <!-- Predict button -->
             <button id="btn-predict" class="btn btn-light btn-block" type="submit" disabled
                 onclick="submitImage();">Predict</button>
@@ -61,13 +74,14 @@
 <script>
 
     // Input validation
-    ['file-uploader', 'image-type', 'model-type'].forEach(function (id) {
+    ['file-uploader', 'image-type', 'model-type', 'localisation-type'].forEach(function (id) {
         document.getElementById(id).addEventListener('change', validateSingle);
     });
 
     // Use cookies to pre-populate selections
     addSelectionActive('image-type', 'image_selection');
     addSelectionActive('model-type', 'model_selection');
+    addSelectionActive('localisation-type', 'localisation_selection');
 
     // Loading animation onClick of #btn-predict
     function submitImage() {
