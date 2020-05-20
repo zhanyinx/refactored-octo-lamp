@@ -14,7 +14,6 @@ from training.util_prediction import get_coordinate_list
 
 def read_image(image_uri: str) -> np.ndarray:
     """Read image_uri."""
-
     def read_image_from_filename(image_filename):
         return skimage.io.imread(image_filename)
 

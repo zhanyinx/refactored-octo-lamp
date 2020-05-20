@@ -1,7 +1,7 @@
 comments: "Evaluation********************************************************************"
 dataset: "SpotsDataset"
 dataset_args:
-    version: "pia_spots_ae714f3b"
+    version: "pia_perfect_spots_df32cb5d"
     cell_size: 4
     flip: True
     illuminate: True
@@ -13,7 +13,7 @@ network: "resnet"
 network_args:
     n_channels: 3
 pred_args:
-    use_gauss: True
-    crop_size: 8
+    use_gauss: False
+    crop_size: 4
 train_args:
     pretrained: "/tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_pia_spots_1589820239.h5"

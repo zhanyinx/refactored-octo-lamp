@@ -37,7 +37,7 @@ def adaptive_preprocessing(image: np.ndarray, image_type: str) -> np.ndarray:
 
     if image_type == "One Frame (Grayscale or RGB)":
         return [skimage.color.rgb2gray(image)]
-    if image_type == "Z-Stack":
+    if image_type == "Z-Stack (max projection)":
         return [np.max(image, axis=axis)]
     if image_type == "All Frames":
         return [np.take(image, i, axis=axis) for i in range(axis_len)]
@@ -54,7 +54,7 @@ def next_multiple_(x: int, base: int = 512) -> int:
     return x
 
 
-# TO DO: save image + spot?
+# TO DO: save multi frame?
 def adaptive_imsave(fname: str, image: np.ndarray, image_type: str, prediction: pd.DataFrame = None) -> None:
     """Saves images according to their selected image type."""
     image = np.array(image).squeeze()
@@ -64,12 +64,12 @@ def adaptive_imsave(fname: str, image: np.ndarray, image_type: str, prediction: 
     if image.ndim not in [2, 3]:
         raise ValueError(f"Image must be 2D or 3D but is {image.ndim}D.")
 
-    if image_type in ["One Frame (Grayscale or RGB)", "Z-Stack"]:
-        plt.axis('off')
+    if image_type in ["One Frame (Grayscale or RGB)", "Z-Stack (max projection)"]:
+        plt.axis("off")
         plt.imshow(image)
         if prediction is not None:
-            plt.scatter(prediction.x, prediction.y, marker="+", s=50, color="r")
-        plt.savefig(fname, bbox_inches='tight', pad_inches=0)
+            plt.scatter(prediction.x, prediction.y, marker="+", s=10, color="r")
+        plt.savefig(fname, bbox_inches="tight", pad_inches=0)
         # skimage.io.imsave(fname, image)
     if image_type == ["All Frames", "Time-Series"]:
         tifffile.imsave(fname, image, imagej=True)

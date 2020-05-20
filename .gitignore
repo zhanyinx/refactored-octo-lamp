@@ -13,3 +13,6 @@ nohup.out
 # Large files
 *.h5
 *.npz
+
+# log files
+*.log

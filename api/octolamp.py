@@ -4,6 +4,7 @@ import logging
 import os
 import uuid
 import glob
+import sys
 from typing import Iterable, Dict
 
 import gdown
@@ -20,8 +21,11 @@ from flask import (
 from werkzeug.utils import secure_filename
 import tensorflow as tf
 
-from util_image import adaptive_imread, adaptive_preprocessing, ALLOWED_EXTENSIONS, adaptive_imsave
-from util_model import adaptive_prediction
+sys.path.append("../")
+
+from api.util_image import adaptive_imread, adaptive_preprocessing, ALLOWED_EXTENSIONS, adaptive_imsave
+from api.util_model import adaptive_prediction
+from api.util import f1_l2_combined_loss, f1_score, l2_norm
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 app.config["SECRET_KEY"] = str(uuid.uuid4())
@@ -32,14 +36,16 @@ app.config["PROCESSED_FOLDER"] = "static/tmp_processed"
 app.jinja_env.filters["zip"] = zip  # pylint: disable=no-member
 
 
-IMAGE_TYPES = ["One Frame (Grayscale or RGB)", "Z-Stack", "Time-Series"]
+IMAGE_TYPES = ["One Frame (Grayscale or RGB)", "Z-Stack (max projection)"]
 MODEL_IDS = {
-    "Spot Detection": "1XePQvBqgVx1zZZeYEryFd56ujgZumA9F",
+    "Ivana spots": "model_Ivana_spots_1589820419",
+    "Pia spots": "model_pia_spots_1589820239",
+    "Synthetic spots": "model_octo-lamp_1589820258",
 }
 LOCALISATION_TYPES = ["Neural network", "Gaussian fitting"]
 MODELS: Dict[str, tf.keras.models.Model] = {}
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(filename)s %(funcName)s %(lineno)s - %(message)s"
-logging.basicConfig(filename="./fluffy.log", level=logging.DEBUG, format=LOG_FORMAT, filemode="a")
+logging.basicConfig(filename="./spotlify.log", level=logging.DEBUG, format=LOG_FORMAT, filemode="a")
 log = logging.getLogger()
 
 
@@ -51,7 +57,9 @@ def load_model(model_id: str) -> tf.keras.models.Model:
     model_file = os.path.join(app.config["MODEL_FOLDER"], f"{model_id}.h5")
     if not os.path.exists(model_file):
         model_file = gdown.download(f"https://drive.google.com/uc?id={model_id}", model_file)
-    model = tf.keras.models.load_model(model_file)
+    model = tf.keras.models.load_model(
+        model_file, {"f1_l2_combined_loss": f1_l2_combined_loss, "f1_score": f1_score, "l2_norm": l2_norm}
+    )
     return model
 
 
@@ -180,6 +188,7 @@ def batch():
     model_selection = request.cookies.get("model_selection")
     image_types = IMAGE_TYPES.copy()
     image_types.append("All Frames")
+    image_types.append("Time-Series")
 
     return render_template(
         "batch.html",

@@ -1,0 +1,66 @@
+comments: Evaluation********************************************************************
+dataset: SpotsDataset
+dataset_args:
+  cell_size: 4
+  flip: true
+  gaussian_noise: true
+  illuminate: true
+  rotate: true
+  translate: false
+  version: ivana_spot_fb2749af
+evaluation:
+  f1_score: 0.9402053356170654
+  l2_norm: 0.04744463786482811
+model: SpotsModel
+network: resnet
+network_args:
+  n_channels: 3
+pred_args:
+  crop_size: 4
+  use_gauss: false
+train_args:
+  pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_Ivana_spots_1589820419.h5
+comments: Evaluation********************************************************************
+dataset: SpotsDataset
+dataset_args:
+  cell_size: 4
+  flip: true
+  gaussian_noise: true
+  illuminate: true
+  rotate: true
+  translate: false
+  version: ivana_spot_fb2749af
+evaluation:
+  f1_score: 0.9402053356170654
+  l2_norm: 0.05261354520916939
+model: SpotsModel
+network: resnet
+network_args:
+  n_channels: 3
+pred_args:
+  crop_size: 4
+  use_gauss: true
+train_args:
+  pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_Ivana_spots_1589820419.h5
+comments: Evaluation********************************************************************
+dataset: SpotsDataset
+dataset_args:
+  cell_size: 4
+  flip: true
+  gaussian_noise: true
+  illuminate: true
+  rotate: true
+  translate: false
+  version: ivana_spot_fb2749af
+evaluation:
+  f1_score: 0.9402053356170654
+  l2_norm: 0.05261354520916939
+model: SpotsModel
+network: resnet
+network_args:
+  n_channels: 3
+pred_args:
+  crop_size: 8
+  use_gauss: true
+train_args:
+  pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_Ivana_spots_1589820419.h5

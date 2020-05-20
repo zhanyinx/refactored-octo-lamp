@@ -1,13 +1,15 @@
 """Util function for model processing."""
 from typing import Tuple
+import sys
 
 import tensorflow as tf
 import numpy as np
 import skimage.util
 import pandas as pd
 
-from .util import gauss_single_image, get_coordinate_list
-from .util_image import next_multiple_
+sys.path.append("../")
+from api.util import gauss_single_image, get_coordinate_list
+from api.util_image import next_multiple_
 
 
 PREDICTORS = ["Gauss localisation", "Network localisation"]

@@ -1,0 +1,44 @@
+comments: Evaluation********************************************************************
+dataset: SpotsDataset
+dataset_args:
+  cell_size: 4
+  flip: true
+  gaussian_noise: true
+  illuminate: true
+  rotate: true
+  translate: false
+  version: pia_perfect_spots_df32cb5d
+evaluation:
+  f1_score: 0.7580824494361877
+  l2_norm: 0.19653728604316711
+model: SpotsModel
+network: resnet
+network_args:
+  n_channels: 3
+pred_args:
+  crop_size: 64
+  use_gauss: true
+train_args:
+  pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_pia_spots_1589820239.h5
+comments: Evaluation********************************************************************
+dataset: SpotsDataset
+dataset_args:
+  cell_size: 4
+  flip: true
+  gaussian_noise: true
+  illuminate: true
+  rotate: true
+  translate: false
+  version: pia_perfect_spots_df32cb5d
+evaluation:
+  f1_score: 0.7580824494361877
+  l2_norm: 0.18894705176353455
+model: SpotsModel
+network: resnet
+network_args:
+  n_channels: 3
+pred_args:
+  crop_size: 4
+  use_gauss: false
+train_args:
+  pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_pia_spots_1589820239.h5
