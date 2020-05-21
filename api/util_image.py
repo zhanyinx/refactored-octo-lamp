@@ -68,7 +68,7 @@ def adaptive_imsave(fname: str, image: np.ndarray, image_type: str, prediction: 
         plt.axis("off")
         plt.imshow(image)
         if prediction is not None:
-            plt.scatter(prediction.x, prediction.y, marker="+", s=10, color="r")
+            plt.scatter(prediction.x, prediction.y, marker="+", linewidths=0.5, s=5, color="r")
         plt.savefig(fname, bbox_inches="tight", pad_inches=0)
         # skimage.io.imsave(fname, image)
     if image_type == ["All Frames", "Time-Series"]:

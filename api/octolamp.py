@@ -70,7 +70,7 @@ def predict(
     log.info(f'Predicting with file "{file}", image "{image_type}", model {model_type}".')
 
     # Get filename from request.form.get
-    fname = os.path.join(app.config["UPLOAD_FOLDER"], secure_filename(file.filename))
+    fname = os.path.join(app.config["UPLOAD_FOLDER"], secure_filename(file.filename))  # type: ignore[attr-defined]
 
     # Output format
     ext = "tiff"
@@ -78,10 +78,11 @@ def predict(
         ext = "png"
 
     # Naming
-    basename = f'{secure_filename(file.filename).split(".")[0]}.{ext}'
+    base = f'{secure_filename(file.filename).split(".")[0]}'  # type: ignore[attr-defined]
+    basename = f'{base}.{ext}'
     fname_in = os.path.join(app.config["DISPLAY_FOLDER"], basename)
-    fname_out = os.path.join(app.config["PROCESSED_FOLDER"], basename)
-    file.save(fname)
+    fname_out_image = os.path.join(app.config["PROCESSED_FOLDER"], basename)
+    file.save(fname)  # type: ignore[attr-defined]
     log.info(f'File "{fname}" saved.')
 
     # Processing
@@ -94,12 +95,16 @@ def predict(
     if single_:
         adaptive_imsave(fname=fname_in, image=preprocessed, image_type=image_type)
 
-    adaptive_imsave(fname=fname_out, image=prediction, image_type=image_type, prediction=prediction)
-    log.info(f"Predictions saved.")
+    adaptive_imsave(fname=fname_out_image, image=preprocessed, image_type=image_type, prediction=prediction)
+    log.info(f"Predictions image saved.")
+
+    fname_out_coordinates = os.path.join(app.config["PROCESSED_FOLDER"], f'{base}.csv')
+    prediction.to_csv(fname_out_coordinates, index=False)
+    log.info(f"Predictions coordinates saved.")
 
     if single_:
-        return fname_in, fname_out
-    return fname_out
+        return fname_in, fname_out_image, fname_out_coordinates
+    return fname_out_coordinates
 
 
 ########################################
@@ -156,23 +161,25 @@ def predict_single():
         f"Single selections - file: {file}, image: {image_selection}, model: {model_selection}, localisation: {loc}."
     )
 
-    fname_in, fname_out = predict(
+    fname_in, fname_out_image, fname_out_coordinates = predict(
         file=file, image_type=image_selection, model_type=model_selection, localisator=loc, single_=True
     )
 
-    pred_display = fname_out
+    pred_display = fname_out_image
 
     resp = make_response(
         render_template(
             "prediction.html",
             title="Prediction",
             original=fname_in,
-            prediction=fname_out,
+            prediction=fname_out_image,
+            prediction_coord=fname_out_coordinates,
             prediction_display=pred_display,
         )
     )
     resp.set_cookie("image_selection", image_selection)
     resp.set_cookie("model_selection", model_selection)
+    resp.set_cookie("localisation_selection", loc)
     return resp
 
 
@@ -186,6 +193,7 @@ def batch():
     """Standard "Batch Processing" page."""
     image_selection = request.cookies.get("image_selection")
     model_selection = request.cookies.get("model_selection")
+    localisation_selection = request.cookies.get("localisation_selection")
     image_types = IMAGE_TYPES.copy()
     image_types.append("All Frames")
     image_types.append("Time-Series")
@@ -197,6 +205,8 @@ def batch():
         image_selection=image_selection,
         model_options=list(MODEL_IDS.keys()),
         model_selection=model_selection,
+        localisation_options=LOCALISATION_TYPES,
+        localisation_selection=localisation_selection,
     )
 
 
@@ -207,9 +217,13 @@ def predict_batch():
     files = request.files.getlist("file")
     image_selection = request.form.get("image")
     model_selection = request.form.get("model")
-    log.info(f"Batch selections - ids: {uuids}, files: {files}, image: {image_selection}, model: {model_selection}.")
+    loc = request.form.get("localisation")
+    log.info(
+        f"Batch selections - ids: {uuids}, files: {files}, image: {image_selection}, \
+        model: {model_selection}, localisation: {loc}."
+    )
 
-    response = {uuid: predict(file, image_selection, model_selection) for uuid, file in zip(uuids, files)}
+    response = {uuid: predict(file, image_selection, model_selection, loc) for uuid, file in zip(uuids, files)}
     return jsonify(response)
 
 

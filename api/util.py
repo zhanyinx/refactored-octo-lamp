@@ -161,7 +161,7 @@ def gauss_single_spot(image: np.ndarray, x_coord: float, y_coord: float, crop_si
 def gauss_single_image(image: np.ndarray, mask: np.ndarray, cell_size: int = 4, crop_size: int = 4):
     """Gaussian prediction on a single image."""
     prediction_coord = []
-    coord_list = get_coordinate_list(mask, image.shape[0], image.shape[0] // cell_size)
+    coord_list = get_coordinate_list(mask, image.shape[0], int(image.shape[0] // cell_size))
     for i in range(len(coord_list)):
         x_coord = coord_list[i, 0]
         y_coord = coord_list[i, 1]

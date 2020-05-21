@@ -10,7 +10,12 @@
         </div>
         <div class="col-6">
             <a href="{{ url_for('download', filename=prediction) }}">
-                <button id="return" class="btn btn-primary btn-block">Download prediction</button>
+                <button id="return" class="btn btn-primary btn-block">Download prediction as plot</button>
+            </a>
+        </div>
+        <div class="col-6">
+            <a href="{{ url_for('download', filename=prediction_coord) }}">
+                <button id="return" class="btn btn-primary btn-block">Download coordinates prediction</button>
             </a>
         </div>
     </div> 

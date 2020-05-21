@@ -28,7 +28,7 @@ def predict_crop(
         )
     assert crop.shape[0] == crop.shape[1]
 
-    model_cell_size = model_input_size / model.layers[-1].output_shape[1]
+    model_cell_size = int(model_input_size / model.layers[-1].output_shape[1])
 
     pred = model.predict(crop[None, ..., None]).squeeze()
 

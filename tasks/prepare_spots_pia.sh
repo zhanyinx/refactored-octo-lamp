@@ -1,7 +1,7 @@
 #!/bin/bash
 
 python ../training/prepare_spots_pia.py \
-    --path ../raw_data/pia_spots/ \
+    --path ../../nogithub_folders/pia_spots/ \
     --basename pia_spots \
     --conversion 6.25 \
     --test_split 0.1 \
