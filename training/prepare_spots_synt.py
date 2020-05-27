@@ -27,6 +27,7 @@ def import_data(x_list: List[str], y_list: List[str]) -> Tuple[np.ndarray, pd.Da
         # Image import
         image = skimage.io.imread(x)
         image = image / np.max(image)
+
         assert image.ndim == 3
         images.append(image)
 
@@ -52,7 +53,6 @@ def files_to_numpy(images_: List[str], labels_: List[str], cell_size: int = 4) -
         xy = np.stack([curr_df["x"].to_numpy(), curr_df["y"].to_numpy()]).T
         np_labels.append(get_prediction_matrix(xy, 512, cell_size))
 
-    np_images /= 255
     np_labels = np.array(np_labels)
 
     return np_images, np_labels

@@ -154,8 +154,7 @@ def gauss_single_spot(image: np.ndarray, x_coord: float, y_coord: float, crop_si
     if x0 >= image.shape[1] or y0 >= image.shape[0]:
         return x_coord, y_coord
 
-    # return x0, y0
-    return x_coord, y_coord
+    return x0, y0
 
 
 def gauss_single_image(image: np.ndarray, mask: np.ndarray, cell_size: int = 4, crop_size: int = 4):
