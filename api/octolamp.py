@@ -40,7 +40,7 @@ IMAGE_TYPES = ["One Frame (Grayscale or RGB)", "Z-Stack (max projection)"]
 MODEL_IDS = {
     "Ivana spots": "model_Ivana_spots_1589820419",
     "Pia spots": "model_pia_spots_1589820239",
-    "Synthetic spots": "model_octo-lamp_1589820258",
+    "Synthetic spots": "model_octo-lamp_1590569900",
 }
 LOCALISATION_TYPES = ["Neural network", "Gaussian fitting"]
 MODELS: Dict[str, tf.keras.models.Model] = {}
@@ -53,7 +53,7 @@ log = logging.getLogger()
 # Utils / helper functions
 ########################################
 def load_model(model_id: str) -> tf.keras.models.Model:
-    """Downloads and loads models into memory from google drive h5 files."""
+    """Load local or downloads and loads models into memory from google drive h5 files."""
     model_file = os.path.join(app.config["MODEL_FOLDER"], f"{model_id}.h5")
     if not os.path.exists(model_file):
         model_file = gdown.download(f"https://drive.google.com/uc?id={model_id}", model_file)

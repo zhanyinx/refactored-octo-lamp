@@ -106,6 +106,23 @@ def gauss_2d(xy, amplitude, x0, y0, sigma_xy, offset):
     return gauss
 
 
+def gauss_3d(xyz, amplitude, x0, y0, z0, sigma_xy, sigma_z, offset):
+    """3D gaussian."""
+    x, y, z = xyz
+    x0 = float(x0)
+    y0 = float(y0)
+    z0 = float(z0)
+
+    gauss = offset + amplitude * np.exp(
+        -(
+            ((x - x0) ** (2) / (2 * sigma_xy ** (2)))
+            + ((y - y0) ** (2) / (2 * sigma_xy ** (2)))
+            + ((z - z0) ** (2) / (2 * sigma_z ** (2)))
+        )
+    )
+    return gauss
+
+
 def gauss_single_spot(image: np.ndarray, x_coord: float, y_coord: float, crop_size: int):
     """Gaussian prediction on a single crop centred on spot."""
     start_dim1 = np.max([int(np.round(y_coord - crop_size // 2)), 0])
