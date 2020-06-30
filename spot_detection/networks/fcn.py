@@ -2,7 +2,7 @@
 
 import tensorflow as tf
 
-from .util import OPTIONS_CONV
+from ._networks import OPTIONS_CONV
 
 
 def fcn(n_channels: int = 3) -> tf.keras.models.Model:

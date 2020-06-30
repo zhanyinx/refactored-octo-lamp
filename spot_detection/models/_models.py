@@ -6,10 +6,9 @@ from typing import Callable, Dict, List
 
 import numpy as np
 
-from spot_detection.datasets.dataset import Dataset
-from spot_detection.datasets.dataset_sequence import DatasetSequence
-from spot_detection.losses.f1_score import f1_score
-from spot_detection.losses.l2_norm import l2_norm
+from ..datasets import Dataset, SequenceDataset
+from ..losses import f1_score
+from ..losses import l2_norm
 
 DIRNAME = pathlib.Path(__file__).parents[1].resolve() / "weights"
 DATESTRING = datetime.datetime.now().strftime("%Y%d%m_%H%M")
@@ -67,14 +66,14 @@ class Model:
             metrics=self.metrics,
         )
 
-        train_sequence = DatasetSequence(
+        train_sequence = SequenceDataset(
             dataset.x_train,
             dataset.y_train,
             self.train_args["batch_size"],
             format_fn=self.batch_format_fn,
             augment_fn=self.batch_augment_fn,
         )
-        valid_sequence = DatasetSequence(
+        valid_sequence = SequenceDataset(
             dataset.x_valid,
             dataset.y_valid,
             self.train_args["batch_size"],

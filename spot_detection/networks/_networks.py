@@ -4,6 +4,14 @@ from typing import Tuple
 
 import tensorflow as tf
 
+__all__ = [
+    "conv_block",
+    "convpool_block",
+    "convpool_skip_block",
+    "upconv_block",
+    "residual_block",
+    "logit_block",
+]
 
 OPTIONS_CONV = {"kernel_size": 3, "padding": "same", "kernel_initializer": "he_normal"}
 

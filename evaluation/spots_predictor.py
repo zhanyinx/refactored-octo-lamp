@@ -5,8 +5,8 @@ from typing import Union, Dict
 import numpy as np
 
 import evaluation.util as util
-from spot_detection.losses.f1_score import f1_score
-from spot_detection.losses.l2_norm import l2_norm
+from spot_detection.losses import f1_score
+from spot_detection.losses import l2_norm
 
 
 class SpotPredictor:
