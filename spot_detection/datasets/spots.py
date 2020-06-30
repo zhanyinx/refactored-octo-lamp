@@ -2,15 +2,15 @@
 
 import os
 
-import numpy as np
-
-from .dataset import Dataset
+from ._datasets import Dataset
+from ..data import load_npz
 
 DATA_DIRNAME = Dataset.data_dirname()
 
 
 class SpotsDataset(Dataset):
     """Spots dataset class."""
+
     def __init__(self, name: str):
         super().__init__(name)
 
@@ -21,10 +21,4 @@ class SpotsDataset(Dataset):
 
     def load_data(self) -> None:
         """Load dataset into memory."""
-        with np.load(self.data_filename, allow_pickle=True) as data:
-            self.x_train = data["x_train"]
-            self.y_train = data["y_train"]
-            self.x_valid = data["x_valid"]
-            self.y_valid = data["y_valid"]
-            self.x_test = data["x_test"]
-            self.y_test = data["y_test"]
+        self.x_train, self.y_train, self.x_valid, self.y_valid, self.x_test, self.y_test = load_npz(self.data_filename)

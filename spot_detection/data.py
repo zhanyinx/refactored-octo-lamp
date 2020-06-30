@@ -3,6 +3,20 @@
 import numpy as np
 
 
+# TODO check if files have x_train etc.
+def load_npz(fname: str):
+    """Imports the standard npz file format used for custom training and inference."""
+    with np.load(fname, allow_pickle=True) as data:
+        return (
+            data["x_train"],
+            data["y_train"],
+            data["x_valid"],
+            data["y_valid"],
+            data["x_test"],
+            data["y_test"],
+        )
+
+
 def next_power(x: int, k: int = 2) -> int:
     """Calculates x's next higher power of k."""
     y, power = 0, 1

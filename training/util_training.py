@@ -12,8 +12,8 @@ import wandb
 
 sys.path.append("../")
 
-from spot_detection.datasets.dataset import Dataset
-from spot_detection.models.base import Model
+from spot_detection.datasets import Dataset
+from spot_detection.models import Model
 from util_prediction import get_coordinate_list
 
 DEFAULT_CELL_SIZE = 4

@@ -3,5 +3,6 @@
 Contains classes to handle data import and data presentation for training.
 """
 
-from .dataset import Dataset
-from .dataset_spots import SpotsDataset
+from ._datasets import Dataset
+from .sequence import SequenceDataset
+from .spots import SpotsDataset

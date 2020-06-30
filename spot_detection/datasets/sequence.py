@@ -1,4 +1,4 @@
-"""DatasetSequence class."""
+"""SequenceDataset class."""
 
 from typing import Callable, Tuple
 
@@ -12,7 +12,7 @@ def _shuffle(x, y):
     return x[shuffled_indices], y[shuffled_indices]
 
 
-class DatasetSequence(tf.keras.utils.Sequence):
+class SequenceDataset(tf.keras.utils.Sequence):
     """Custom Sequence class used to feed data into model.fit.
 
     Args:

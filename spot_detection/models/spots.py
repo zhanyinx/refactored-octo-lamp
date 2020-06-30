@@ -5,10 +5,10 @@ import functools
 import numpy as np
 import tensorflow as tf
 
-from spot_detection.losses.f1_score import f1_score
-from spot_detection.losses.l2_norm import l2_norm, f1_l2_combined_loss
-from spot_detection.models.base import Model
-from spot_detection.models.util_augment import augment_batch_baseline
+from ..augment import augment_batch_baseline
+from ..losses import f1_score
+from ..losses import l2_norm, f1_l2_combined_loss
+from ._models import Model
 
 DEFAULT_TRAIN_ARGS = {
     "batch_size": 16,
