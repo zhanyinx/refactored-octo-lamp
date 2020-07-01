@@ -6,8 +6,7 @@ import pandas as pd
 
 def euclidean_dist(x1: float, y1: float, x2: float, y2: float) -> float:
     """Return the euclidean distance between two points."""
-    d = np.sqrt(np.square(x1 - x2) + np.square(y1 - y2))
-    return d
+    return np.sqrt(np.square(x1 - x2) + np.square(y1 - y2))
 
 
 def precision(pred: np.ndarray, true: np.ndarray) -> float:

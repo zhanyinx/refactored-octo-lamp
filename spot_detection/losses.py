@@ -1,6 +1,7 @@
-"""Losses folder.
+"""Functions to calculate training loss on batches of images.
 
-Contains functions to calculate training loss on batches of images.
+While functions are comparable to metrics, these rely on keras' backend
+and do not take raw numpy as input.
 """
 
 import tensorflow as tf
@@ -25,6 +26,8 @@ def dice_coef(y_true, y_pred, smooth: int = 1):
     ref: https://arxiv.org/pdf/1606.04797v1.pdf
 
     Args:
+        y_true: Ground truth masks.
+        y_pred: Predicted masks.
         smooth: Epslion value to avoid division by zero.
     """
     y_true_f = K.flatten(y_true)

@@ -73,13 +73,15 @@ def gaussian_noise(image: np.ndarray, mask: np.ndarray, mean: int = 0) -> Tuple[
     """Augment through the addition of gaussian noise.
 
     Args:
+        image: Image to be augmented.
+        mask: Corresponding mask with ground truth values.
         mean: Average noise pixel values added. Zero means no net difference occurs.
     """
     sigma = np.random.uniform(0.0001, 0.01)
     noise = np.random.normal(mean, sigma, image.shape)
     image = image.copy()
 
-    def __gaussian_noise(image: np.ndarray) -> np.ndarray:
+    def _gaussian_noise(image: np.ndarray) -> np.ndarray:
         """Gaussian noise helper."""
         mask_overflow_upper = image + noise >= 1.0
         mask_overflow_lower = image + noise < 0
@@ -88,7 +90,7 @@ def gaussian_noise(image: np.ndarray, mask: np.ndarray, mean: int = 0) -> Tuple[
         image = np.add(image, noise)
         return image
 
-    image = __gaussian_noise(image)
+    image = _gaussian_noise(image)
 
     return image, mask
 
@@ -116,6 +118,8 @@ def translate(image: np.ndarray, mask: np.ndarray, cell_size: int = 4) -> Tuple[
     """Augment through translation along all axes.
 
     Args:
+        image: Image to be augmented.
+        mask: Corresponding mask with ground truth values.
         cell_size: Size of one cell in the grid.
     """
     direction = np.random.choice([0, 1])

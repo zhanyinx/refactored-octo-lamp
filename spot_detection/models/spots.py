@@ -6,8 +6,9 @@ import numpy as np
 import tensorflow as tf
 
 from ..augment import augment_batch_baseline
+from ..losses import f1_l2_combined_loss
 from ..losses import f1_score
-from ..losses import l2_norm, f1_l2_combined_loss
+from ..losses import l2_norm
 from ._models import Model
 
 DEFAULT_TRAIN_ARGS = {
@@ -21,10 +22,7 @@ DEFAULT_OPTIMIZER = tf.keras.optimizers.Adam(DEFAULT_TRAIN_ARGS["learning_rate"]
 
 
 class SpotsModel(Model):
-    """Model to predict spot localization.
-    
-    Initialized with the same arguments as the parent "Model" class.
-    """
+    """Class to predict spot localization; see base class."""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -52,16 +50,4 @@ class SpotsModel(Model):
 
     def predict_on_image(self, image: np.ndarray) -> np.ndarray:
         """Predict on a single input image."""
-        # if image.dtype == np.uint8:
-        #     image = (image / 255).astype(np.float32)
-        # if image.dtype == np.uint16:
-        #     image = (image / 65535).astype(np.float32)
-
-        # pad_bottom = next_power(image.shape[0]) - image.shape[0]
-        # pad_right = next_power(image.shape[1]) - image.shape[1]
-        # image = np.pad(image, ((0, pad_bottom), (0, pad_right)), "reflect")
-
-        pred = self.network.predict(image[None, ..., None], batch_size=1).squeeze()
-        # pred = pred[:pred.shape[0]-pad_bottom, :pred.shape[1]-pad_right]
-
-        return pred
+        return self.network.predict(image[None, ..., None], batch_size=1).squeeze()

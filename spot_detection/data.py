@@ -10,7 +10,7 @@ import numpy as np
 
 
 def next_power(x: int, k: int = 2) -> int:
-    """Calculates x's next higher power of k."""
+    """Calculate x's next higher power of k."""
     y, power = 0, 1
     while y < x:
         y = k ** power
@@ -19,7 +19,7 @@ def next_power(x: int, k: int = 2) -> int:
 
 
 def random_cropping(image: np.ndarray, mask: np.ndarray, cell_size: int, crop_size: int = 256) -> np.ndarray:
-    """Randomly crops an image and mask to size crop_size.
+    """Randomly crop an image and mask to size crop_size.
 
     Args:
         - image: Image to be cropped.

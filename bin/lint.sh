@@ -35,7 +35,7 @@ pydocstyle evaluation/ || FAILURE=true
 #pytest || FAILURE=true
 #cd ../../
 
-cd ./tasks
+cd ./bin
 
 if [ "$FAILURE" = true ]; then
   echo "Linting failed."

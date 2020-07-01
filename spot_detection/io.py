@@ -1,8 +1,9 @@
 """Dataset preparation functions."""
 
+from typing import Iterable
+from typing import List
 import os
 import random
-from typing import Iterable, List
 
 import numpy as np
 
@@ -74,7 +75,7 @@ def train_valid_split(
 def load_npz(fname: str):
     """Imports the standard npz file format used for custom training and inference.
 
-    Only for files saved using np.savez_compressed(fname, x_train, y_train...).
+    Only for files saved using "np.savez_compressed(fname, x_train, y_train...)".
     """
     with np.load(fname, allow_pickle=True) as data:
         return (
