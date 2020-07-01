@@ -1,12 +1,9 @@
 """Script to run a single experiment."""
 
 import argparse
-import sys
 import yaml
 
-sys.path.append("../")
-
-from evaluation.spots_predictor import SpotPredictor
+from spots_predictor import SpotPredictor
 
 
 def _parse_args():
@@ -31,7 +28,7 @@ def main():
     name = dataset_args["version"]
 
     cfg["evaluation"] = {"f1_score": float(f1_score), "l2_norm": float(l2_norm)}
-    with open(f"../evaluation/{name}.evaluation.yaml", "a") as file:
+    with open(f"{name}_evaluation.yaml", "a") as file:
         yaml.dump(cfg, file)
 
 

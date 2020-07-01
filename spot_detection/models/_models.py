@@ -15,7 +15,21 @@ DATESTRING = datetime.datetime.now().strftime("%Y%d%m_%H%M")
 
 
 class Model:
-    """Base class, to be subclassed by predictors for specific type of data."""
+    """Base class, to be subclassed by predictors for specific type of data, e.g. spots.
+
+    Args:
+        dataset_args: Dataset arguments containing - version, cell_size, flip,
+            illuminate, rotate, gaussian_noise, and translate.
+        dataset_cls: Specific dataset class.
+        network_args: Network arguments containing - n_channels.
+        network_fn: Network function returning a built model.
+        loss_fn: Loss function.
+        optimizer_fn: Optimizer function.
+        train_args: Training arguments containing - batch_size, epochs, learning_rate.
+        batch_format_fn: Formatting function added in the specific model, e.g. spots.
+        batch_augment_fn: Same as batch_format_fn for augmentation.
+    """
+
     def __init__(
         self,
         dataset_args: Dict,

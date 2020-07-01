@@ -17,12 +17,15 @@ def categorical_crossentropy(y_true, y_pred):
     return tf.keras.losses.categorical_crossentropy(y_true=y_true, y_pred=y_pred)
 
 
-def dice_coef(y_true, y_pred, smooth=1):
+def dice_coef(y_true, y_pred, smooth: int = 1):
     """Computes the dice coefficient on a batch of tensors.
 
     Dice = (2*|X & Y|)/ (|X|+ |Y|)
          =  2*sum(|A*B|)/(sum(A^2)+sum(B^2))
     ref: https://arxiv.org/pdf/1606.04797v1.pdf
+
+    Args:
+        smooth: Epslion value to avoid division by zero.
     """
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
@@ -83,5 +86,5 @@ def l2_norm(y_true, y_pred):
 
 
 def f1_l2_combined_loss(y_true, y_pred):
-    """Combined loss."""
+    """Sum of F1 loss and L2 norm."""
     return l2_norm(y_true, y_pred) + f1_score_loss(y_true, y_pred)

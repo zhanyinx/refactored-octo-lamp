@@ -64,3 +64,47 @@ pred_args:
   use_gauss: true
 train_args:
   pretrained: /tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_octo-lamp_1590569900.h5
+comments: Evaluation
+dataset: SpotsDataset
+dataset_args:
+  cell_size: 4
+  flip: true
+  gaussian_noise: true
+  illuminate: true
+  rotate: true
+  translate: false
+  version: spots_synt_harder_99659a57
+evaluation:
+  f1_score: 0.0
+  l2_norm: 0.40601834654808044
+model: SpotsModel
+network: resnet
+network_args:
+  n_channels: 3
+pred_args:
+  crop_size: 4
+  use_gauss: true
+train_args:
+  pretrained: /tungstenfs/groups/gchao/eichbast/refactored-octo-lamp/models/model_octo-lamp_1593528633.h5
+comments: Evaluation
+dataset: SpotsDataset
+dataset_args:
+  cell_size: 4
+  flip: true
+  gaussian_noise: true
+  illuminate: true
+  rotate: true
+  translate: false
+  version: spots_synt_harder_99659a57
+evaluation:
+  f1_score: 0.0
+  l2_norm: 0.40601834654808044
+model: SpotsModel
+network: resnet
+network_args:
+  n_channels: 3
+pred_args:
+  crop_size: 4
+  use_gauss: true
+train_args:
+  pretrained: /tungstenfs/groups/gchao/eichbast/refactored-octo-lamp/models/model_octo-lamp_1593528633.h5

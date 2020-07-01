@@ -2,12 +2,12 @@
 
 import argparse
 import os
-import sys
 import yaml
 
-sys.path.append("../")
+import sys
 
-from training.util_training import run_experiment
+sys.path.append("../")
+from spot_detection.training import run_experiment
 
 
 def _parse_args():

@@ -21,11 +21,12 @@ DEFAULT_OPTIMIZER = tf.keras.optimizers.Adam(DEFAULT_TRAIN_ARGS["learning_rate"]
 
 
 class SpotsModel(Model):
-    """Model to predict spot localization."""
-    def __init__(
-        self, **kwargs,
-    ):
+    """Model to predict spot localization.
+    
+    Initialized with the same arguments as the parent "Model" class.
+    """
 
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self.batch_augment_fn = functools.partial(

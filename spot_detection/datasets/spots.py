@@ -1,15 +1,15 @@
-"""StandardDataset class."""
+"""SpotsDataset class."""
 
 import os
 
 from ._datasets import Dataset
-from ..data import load_npz
+from ..io import load_npz
 
 DATA_DIRNAME = Dataset.data_dirname()
 
 
 class SpotsDataset(Dataset):
-    """Spots dataset class."""
+    """A class used to load all spots data."""
 
     def __init__(self, name: str):
         super().__init__(name)

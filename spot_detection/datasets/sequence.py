@@ -47,7 +47,7 @@ class SequenceDataset(tf.keras.utils.Sequence):
 
     def __getitem__(self, idx) -> Tuple[np.ndarray, np.ndarray]:
         """Return a single batch."""
-        #        idx = 0  # Overfit to just one batch
+        # idx = 0  # Uncomment to overfit to just one batch
         begin = idx * self.batch_size
         end = (idx + 1) * self.batch_size
 
@@ -68,6 +68,5 @@ class SequenceDataset(tf.keras.utils.Sequence):
         return batch_x, batch_y
 
     def on_epoch_end(self) -> None:
-        """Shuffle data."""
-        # print("Running shuffling.")
+        """Shuffle data after every epoch."""
         self.x, self.y = _shuffle(self.x, self.y)

@@ -1,4 +1,4 @@
-comments: "Evaluation********************************************************************"
+comments: "Evaluation"
 dataset: "SpotsDataset"
 dataset_args:
     version: "spots_synt_harder_99659a57"
@@ -13,7 +13,7 @@ network: "resnet"
 network_args:
     n_channels: 3
 pred_args:
-    use_gauss: True
+    use_gauss: False
     crop_size: 4
 train_args:
-    pretrained: "/tungstenfs/scratch/ggiorget/zhan/2020/Spot_detection/refactored-octo-lamp/models/model_octo-lamp_1590569900.h5"
+    pretrained: "/tungstenfs/groups/gchao/eichbast/refactored-octo-lamp/models/model_octo-lamp_1593528633.h5"
