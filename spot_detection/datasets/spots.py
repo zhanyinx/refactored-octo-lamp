@@ -9,7 +9,7 @@ DATA_DIRNAME = Dataset.data_dirname()
 
 
 class SpotsDataset(Dataset):
-    """A class used to load all spots data."""
+    """Class used to load all spots data."""
 
     def __init__(self, name: str):
         super().__init__(name)

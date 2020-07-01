@@ -1,16 +1,16 @@
 """Training functions."""
 
+from typing import Dict
 import platform
 import time
-from typing import Dict
 
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import wandb
 
+from .data import get_coordinate_list
 from .datasets import Dataset
 from .models import Model
-from .data import get_coordinate_list
 from .util import get_from_module
 
 
@@ -133,6 +133,7 @@ def run_experiment(cfg: Dict, save_weights: bool = False):
                 batch_size (int): Number of images per mini-batch.
                 epochs (int): Total rounds of training.
                 learning_rate (float): Learning rate, e.g. 1e-4
+
         save_weights: If model weights should be saved separately.
             The complete model is automatically saved.
     """

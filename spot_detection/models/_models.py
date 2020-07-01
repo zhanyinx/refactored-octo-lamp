@@ -1,12 +1,15 @@
 """Model class, to be extended by specific types of models."""
 
-import pathlib
+from typing import Callable
+from typing import Dict
+from typing import List
 import datetime
-from typing import Callable, Dict, List
+import pathlib
 
 import numpy as np
 
-from ..datasets import Dataset, SequenceDataset
+from ..datasets import Dataset
+from ..datasets import SequenceDataset
 from ..losses import f1_score
 from ..losses import l2_norm
 

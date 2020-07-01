@@ -1,7 +1,7 @@
 """Utility helper functions."""
 
-import importlib
 from typing import Callable
+import importlib
 
 
 def get_from_module(path: str, attribute: str) -> Callable:
