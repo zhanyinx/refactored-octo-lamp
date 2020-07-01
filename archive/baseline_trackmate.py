@@ -1,17 +1,24 @@
-"""Utils necessary to load data from labels/ trackmate/ folder structure."""
+"""Computes the baseline value metrics of spot detection given trackmate labels.
 
+Returns a csv file with all metrics.
+Here different metrics are used: f1_score, error on xy, and combination of f1_score and error on xy
+"""
+
+
+from typing import Iterable, List, Iterable
+import argparse
 import glob
 import math
 import os
 import sys
-from typing import List, Iterable
 
 import numpy as np
 import pandas as pd
 import skimage.io
 
 sys.path.append("../")
-from training.util_prepare import extract_basename
+from spot_detection.io import extract_basename
+from spot_detection.metrics import compute_score
 
 
 def trackmate_get_file_lists(path: str) -> Iterable[List[str]]:
@@ -125,3 +132,89 @@ def trackmate_files_to_numpy(
     np_trackmate = trackmate_remove_zeros(np_trackmate)
 
     return np_images, np_labels, np_trackmate
+
+
+def load_trackmate_data(path: str, size: int, cell_size: int, conversion: float = 1) -> Iterable[np.ndarray]:
+    """Returns three lists of np.ndarray of shape (n,n,3): containing p,x,y.
+
+    Args:
+        - path (str): path to directory containing trackmate and labels subdirectories.
+        - size (int): size of the images labeled by trackmate or human.
+        - cell_size (int): size of cell used to calculate F1 score, precision and recall.
+        - conversion (float): scaling factor used to convert coordinates into pixel unit (default = 1, no conversion).
+
+    Returns:
+        - images (np.ndarray): a numpy array of images.
+        - label_true (np.ndarray): true mask (label or prediction)
+        - label_trackmate (np.ndarray): trackmate prediction
+    """
+    if not all(isinstance(i, int) for i in (size, cell_size)):
+        raise TypeError(f"size and cell_size must be int, but are {type(size), type(cell_size)}.")
+
+    x_list, y_list, t_list = trackmate_get_file_lists(path)
+    (images, label_true, label_trackmate,) = trackmate_files_to_numpy(
+        x_list, y_list, t_list, conversion, size, cell_size
+    )
+    return images, label_true, label_trackmate
+
+
+def _parse_args():
+    """Argument parser."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-t",
+        "--trackmate",
+        type=str,
+        required=True,
+        help="Path of directory containing labels and trackmate subfolders",
+    )
+    parser.add_argument(
+        "-c",
+        "--conversion",
+        type=float,
+        help="Rescaling factor to convert coordinates into pixel unit, required if --trackmate is defined",
+    )
+    parser.add_argument(
+        "-s", "--size", type=int, required=True, help="Size of images",
+    )
+    parser.add_argument(
+        "-z", "--cell_size", type=int, required=True, help="Size of the cell in the grid",
+    )
+
+    parser.add_argument(
+        "-w", "--weight", type=float, help="Value multiplied to f1_score to calculate single weighted score",
+    )
+    args = parser.parse_args()
+
+    return args
+
+
+def main():
+    """Computes baseline for spots from trackmate."""
+    args = _parse_args()
+
+    size = args.size
+    cell_size = args.cell_size
+    weight = 1
+
+    if args.weight is not None:
+        weight = args.weight
+
+    print(f"Using trackmate data at {args.trackmate}")
+
+    if args.conversion is None:
+        raise ValueError("--trackmate requires --conversion.")
+
+    trackmate = args.trackmate
+    conversion = args.conversion
+
+    images, label_true, label_trackmate = load_trackmate_data(
+        path=trackmate, conversion=conversion, size=size, cell_size=cell_size
+    )
+    df = compute_score(true=label_true, pred=label_trackmate, cell_size=cell_size, weight=weight)
+    df_describe = df.describe()
+    df_describe.to_csv(f"{os.path.splitext(args.trackmate)[0]}_trackmate_baseline.csv")
+
+
+if __name__ == "__main__":
+    main()

@@ -4,7 +4,7 @@ import tensorflow as tf
 from ._networks import residual_block, conv_block
 
 
-def resnet(n_channels: int = 3, dropout: int = 0.2) -> tf.keras.models.Model:
+def resnet(n_channels: int = 3, dropout: float = 0.2) -> tf.keras.models.Model:
     """Simplest FCN architecture without skips."""
     i = 6  # 64
 

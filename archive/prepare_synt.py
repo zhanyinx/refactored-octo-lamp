@@ -8,11 +8,10 @@ import numpy as np
 import pandas as pd
 import skimage.io
 
-
 sys.path.append("../")
-from training.util_prepare import (
-    train_valid_split,
-    get_prediction_matrix,
+from spot_detection.io import train_valid_split
+from spot_detection.data import get_prediction_matrix
+from prepare import (
     get_file_lists,
     _parse_args,
 )

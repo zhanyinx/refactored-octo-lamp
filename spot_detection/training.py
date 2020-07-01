@@ -1,29 +1,17 @@
 """Training functions."""
 
-import importlib
 import platform
-import sys
 import time
-from typing import Dict, Callable
+from typing import Dict
 
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import wandb
 
-sys.path.append("../")
-
-from spot_detection.datasets import Dataset
-from spot_detection.models import Model
-from util_prediction import get_coordinate_list
-
-DEFAULT_CELL_SIZE = 4
-
-
-def get_from_module(path: str, attribute: str) -> Callable:
-    """Grabs an attribute from a given module path."""
-    module = importlib.import_module(path)
-    attribute = getattr(module, attribute)
-    return attribute  # type: ignore[return-value]
+from .datasets import Dataset
+from .models import Model
+from .data import get_coordinate_list
+from .util import get_from_module
 
 
 class WandbImageLogger(tf.keras.callbacks.Callback):
@@ -31,9 +19,8 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
 
     Expects segmentation images and the model class to have a predict_on_image method.
     """
-    def __init__(
-        self, model_wrapper: Model, dataset: Dataset, cell_size: int = DEFAULT_CELL_SIZE, example_count: int = 4
-    ):
+
+    def __init__(self, model_wrapper: Model, dataset: Dataset, cell_size: int = 4, example_count: int = 4):
         super().__init__()
         self.model_wrapper = model_wrapper
         self.valid_images = dataset.x_valid[:example_count]  # type: ignore[index]
@@ -91,31 +78,18 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
         plt.close(fig="all")
 
 
-class DataShuffler(tf.keras.callbacks.Callback):
-    """Temporary on_epoch_end data shuffling as tf v2.1.0 has the known bug of not calling on_epoch_end."""
-    def __init__(self):
-        pass
-
-    def on_epoch_end(self, epoch, logs=None):
-        """Reshuffle dataset."""
-        # print("GLOBAL")
-        # print([v for v in globals().keys() if not v.startswith('_')])
-        # Access to the global variable "Dataset" here,
-        # one should shuffle here or what I ended up doing
-        # in the model base class added "shuffle=True" for ".fit"
-        # this will only shuffle training data.
-
-
-def train_model(model: Model, dataset: Dataset, cfg: Dict) -> Model:
-    """Model training with wandb callbacks."""
+def train_model(model: Model, dataset: Dataset, cfg: Dict, use_wandb: bool = True) -> Model:
+    """Model training/fitting with wandb callbacks."""
     dataset_args = cfg["dataset_args"]
-    wandb_callback = wandb.keras.WandbCallback()
     image_callback = WandbImageLogger(model, dataset, dataset_args["cell_size"])
     saver_callback = tf.keras.callbacks.ModelCheckpoint(
         f"../models/model_{cfg['name']}_{int(time.time())}.h5", save_best_only=False,
     )
-    shuffle_callback = DataShuffler()
-    callbacks = [wandb_callback, image_callback, saver_callback, shuffle_callback]
+    callbacks = [image_callback, saver_callback]
+
+    if use_wandb:
+        wandb_callback = wandb.keras.WandbCallback()
+        callbacks.append(wandb_callback)
 
     tic = time.time()
     model.fit(dataset=dataset, callbacks=callbacks)
@@ -145,6 +119,8 @@ def run_experiment(cfg: Dict, save_weights: bool = False):
     dataset = dataset_class_(dataset_args["version"])
     dataset.load_data()
 
+    use_wandb = cfg["use_wandb"]
+
     model = model_class_(
         dataset_args=dataset_args,
         dataset_cls=dataset,
@@ -161,13 +137,15 @@ def run_experiment(cfg: Dict, save_weights: bool = False):
         "platform": platform.platform(),
     }
 
-    wandb.init(project=cfg["name"], config=cfg)
+    if use_wandb:
+        wandb.init(project=cfg["name"], config=cfg)
 
-    model = train_model(model, dataset, cfg)
-    score = model.evaluate(dataset.x_valid, dataset.y_valid)
-    wandb.log({"valid_metric": score})
+    model = train_model(model, dataset, cfg, use_wandb)
+
+    if use_wandb:
+        score = model.evaluate(dataset.x_valid, dataset.y_valid)
+        wandb.log({"valid_metric": score})
+        wandb.join()
 
     if save_weights:
         model.save_weights()
-
-    wandb.join()

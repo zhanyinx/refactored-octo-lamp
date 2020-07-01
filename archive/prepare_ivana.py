@@ -4,38 +4,46 @@ import secrets
 import sys
 from typing import List, Iterable
 
-import skimage.io
-import pandas as pd
 import numpy as np
+import pandas as pd
+import skimage.io
 
 sys.path.append("../")
-from training.util_prepare import train_valid_split, get_prediction_matrix, _parse_args, get_file_lists, remove_zeros
+from spot_detection.io import train_valid_split, remove_zeros
+from spot_detection.data import get_prediction_matrix, random_cropping
+from prepare import (
+    get_file_lists,
+    _parse_args,
+)
 
 
-def group_to_numpy(img: str, label: str, conversion: float, cell_size: int) -> Iterable[np.ndarray]:
-    """Reads files groups, sorts them, convert coordinates to pixel unit and returns numpy arrays."""
+def group_to_numpy(img: str, label: str, cell_size: int) -> Iterable[np.ndarray]:
+    """Reads files groups, sorts them and returns numpy arrays."""
     image = skimage.io.imread(img)
-    image = image / np.max(image)
+    image = image / np.max(image)  # normalisation
 
-    df = pd.read_table(label)
+    df = pd.read_csv(label)
+
     if min(image.shape) < 512 or len(df) < 5:
         return 0, 0  # type: ignore[return-value]
 
-    df.columns = ["x", "y"]
     xy = np.stack([df["y"].to_numpy(), df["x"].to_numpy()]).T
-    xy = xy * conversion
-    xy = get_prediction_matrix(xy, len(image), cell_size)
+    xy = get_prediction_matrix(xy, image.shape[0], cell_size, image.shape[1])
 
     return image, xy
 
 
-def files_to_numpy(images: List[str], labels: List[str], conversion: float, cell_size: int,) -> Iterable[np.ndarray]:
+def files_to_numpy(images: List[str], labels: List[str], cell_size: int, crop_size: int) -> Iterable[np.ndarray]:
     """Converts file lists into numpy arrays."""
     np_images = []
     np_labels = []
 
-    for image, label in zip(images, labels):
-        image, label = group_to_numpy(image, label, conversion, cell_size)
+    for img, label_ in zip(images, labels):
+        image, label = group_to_numpy(img, label_, cell_size)
+
+        if isinstance(image, np.ndarray) and any(i > crop_size for i in image.shape):
+            image, label = random_cropping(image, label, cell_size, crop_size)
+
         np_images.append(image)
         np_labels.append(label)
 
@@ -57,9 +65,9 @@ def main():
         x_list=x_trainval, y_list=y_trainval, valid_split=args.valid_split
     )
 
-    x_train, y_train = files_to_numpy(x_train, y_train, args.conversion, args.cell_size)
-    x_valid, y_valid = files_to_numpy(x_valid, y_valid, args.conversion, args.cell_size)
-    x_test, y_test = files_to_numpy(x_test, y_test, args.conversion, args.cell_size)
+    x_train, y_train = files_to_numpy(x_train, y_train, args.cell_size, 512)
+    x_valid, y_valid = files_to_numpy(x_valid, y_valid, args.cell_size, 512)
+    x_test, y_test = files_to_numpy(x_test, y_test, args.cell_size, 512)
 
     print(f"All files*: {len(x_list)}")
     print(f"All files: {len(x_train) + len(x_valid) + len(x_test)}")
@@ -69,7 +77,7 @@ def main():
 
     fname = f"../data/{args.basename}_{secrets.token_hex(4)}.npz"
     np.savez_compressed(
-        fname, x_train=x_train, x_valid=x_valid, x_test=x_test, y_train=y_train, y_valid=y_valid, y_test=y_test,
+        fname, x_train=x_train, x_valid=x_valid, x_test=x_test, y_train=y_train, y_valid=y_valid, y_test=y_test
     )
 
 

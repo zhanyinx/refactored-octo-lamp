@@ -16,8 +16,8 @@ import skimage.feature
 
 sys.path.append("../")
 
-from training.util_prepare import get_prediction_matrix
-from util_baseline import compute_score
+from spot_detection.data import get_prediction_matrix
+from spot_detection.metrics import compute_score
 
 
 def detect_spots(input_image: np.ndarray, cell_size: int) -> np.ndarray:

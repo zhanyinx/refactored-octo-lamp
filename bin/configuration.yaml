@@ -1,5 +1,6 @@
 name: "octo-lamp"
 comments: "No augmentation, yes dropout, np.max norm"
+use_wandb: True
 dataset: "SpotsDataset"
 dataset_args:
     version: "spots_synt_harder_99659a57"

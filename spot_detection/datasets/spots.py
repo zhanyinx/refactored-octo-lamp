@@ -3,7 +3,7 @@
 import os
 
 from ._datasets import Dataset
-from ..data import load_npz
+from ..io import load_npz
 
 DATA_DIRNAME = Dataset.data_dirname()
 
