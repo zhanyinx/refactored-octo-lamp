@@ -109,7 +109,16 @@ def get_coordinate_list(matrix: np.ndarray, size_image: int = 512, size_grid: in
 def get_absolute_coordinates(
     coord_spot: Tuple[np.float32, np.float32], coord_cell: Tuple[np.float32, np.float32], size_gridcell: int = 8
 ) -> Tuple[np.float32, np.float32]:
-    """Return the absolute image coordinates from relative cell coordinates."""
+    """Return the absolute image coordinates from relative cell coordinates.
+
+    Args:
+        coord_spot: Relative spot coordinate in format (x, y).
+        coord_cell: Top-left coordinate of the cell.
+        size_gridcell: Size of one cell in a grid.
+
+    Returns:
+        Absolute coordinate.
+    """
     assert len(coord_spot) == 2 and len(coord_cell) == 2
 
     coord_rel = tuple(map(lambda x: x * size_gridcell, coord_spot))

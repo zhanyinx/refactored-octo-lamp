@@ -70,7 +70,11 @@ def illuminate(image: np.ndarray, mask: np.ndarray) -> Tuple[np.ndarray, np.ndar
 
 
 def gaussian_noise(image: np.ndarray, mask: np.ndarray, mean: int = 0) -> Tuple[np.ndarray, np.ndarray]:
-    """Augment through the addition of gaussian noise."""
+    """Augment through the addition of gaussian noise.
+
+    Args:
+        mean: Average noise pixel values added. Zero means no net difference occurs.
+    """
     sigma = np.random.uniform(0.0001, 0.01)
     noise = np.random.normal(mean, sigma, image.shape)
     image = image.copy()
@@ -109,7 +113,11 @@ def rotate(image: np.ndarray, mask: np.ndarray) -> Tuple[np.ndarray, np.ndarray]
 
 
 def translate(image: np.ndarray, mask: np.ndarray, cell_size: int = 4) -> Tuple[np.ndarray, np.ndarray]:
-    """Augment through translation along all axes."""
+    """Augment through translation along all axes.
+
+    Args:
+        cell_size: Size of one cell in the grid.
+    """
     direction = np.random.choice([0, 1])
     image = image.copy()
     mask = mask.copy()

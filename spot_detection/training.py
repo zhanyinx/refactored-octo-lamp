@@ -18,6 +18,12 @@ class WandbImageLogger(tf.keras.callbacks.Callback):
     """Custom image prediction logger callback in wandb.
 
     Expects segmentation images and the model class to have a predict_on_image method.
+
+    Args:
+        model_wrapper: Model used for predictions.
+        dataset: Dataset class containing data.
+        cell_size: Size of one cell in the grid.
+        example_count: Number of examples saved for display.
     """
 
     def __init__(self, model_wrapper: Model, dataset: Dataset, cell_size: int = 4, example_count: int = 4):
@@ -102,9 +108,33 @@ def run_experiment(cfg: Dict, save_weights: bool = False):
     """Run a training experiment.
 
     Args:
-        cfg: Parsed yaml configuration file.
-            Check the experiments folder for examples.
-        save_weights: If model weights should be saved.
+        cfg: Dictionary configuration file.
+            Usually through a parsed yaml file (example in bin/) in the following format...
+
+            name (str): Name of the Wandb project.
+            comments (str): Comments on runs.
+            use_wandb (bool): If Wandb should be used.
+            dataset (str): Name of dataset class, e.g. "SpotsDataset"
+            dataset_args:
+                version (str): Name of npz file, e.g. "spots_synt_99659a57"
+                cell_size (int): Size of one cell in the grid.
+                flip (bool): If flipping should be used as augmentation.
+                illuminate (bool): If illumination should be used as augmentation.
+                rotate (bool): If rotation should be used as augmentation.
+                gaussian_noise (bool): If gaussian noise should be added as augmentation.
+                translate (bool): If translation should be used as augmentation.
+            model (str): Name of the model class, e.g. "SpotsModel"
+            network (str): Name of the network architecture, e.g. "resnet"
+            network_args:
+                n_channels (int): Set to 3 unless a custom architecture is used.
+            loss (str): Primary loss, e.g. "binary_crossentropy"
+            optimizer (str): Optimizer, e.g. "adam"
+            train_args:
+                batch_size (int): Number of images per mini-batch.
+                epochs (int): Total rounds of training.
+                learning_rate (float): Learning rate, e.g. 1e-4
+        save_weights: If model weights should be saved separately.
+            The complete model is automatically saved.
     """
     dataset_class_ = get_from_module("spot_detection.datasets", cfg["dataset"])
     model_class_ = get_from_module("spot_detection.models", cfg["model"])

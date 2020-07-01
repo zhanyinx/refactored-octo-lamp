@@ -1,11 +1,13 @@
 """Spot detection module.
 
-Contains the code to be used by the training/ folder.
-Divided into the following folders:
+    - augment: Data augmentation to artificially increase dataset size.
+    - data: Data manipulation. Mainly to properly format for training.
     - datasets: Unique data import functions.
+    - io: File-manipulation-related functions.
     - losses: Simple functions returning model losses.
+    - metrics: Quantitative output of training / model performance.
     - models: Training loop containing classes for each type of model.
     - networks: Architecture / building of model structure.
     - optimizers: Simple functions returning model optimizers.
-    - tests: Unittests for important function.
+    - util: Basic utility functions not fitting into a category.
 """
