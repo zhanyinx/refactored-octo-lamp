@@ -1,4 +1,3 @@
-# refactored-octo-lamp
-Experiments for spot detection.
+# Depricated
 
-[Quick access to kanban.](https://github.com/zhanyinx/refactored-octo-lamp/projects/2)
+Official version on [deepblink](https://github.com/BBQuercus/deepBlink)
